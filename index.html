@@ -1,100 +1,261 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Namskar — Nakshatra Pardeshi</title>
-  <meta name="description" content="Minimal one‑page site for Nakshatra Pardeshi" />
-  <meta property="og:title" content="Namskar — Nakshatra Pardeshi" />
-  <meta property="og:description" content="Minimal, classy one‑pager" />
-  <meta property="og:type" content="website" />
-  <meta name="theme-color" content="#0f172a" />
-  <style>
-    :root{
-      --bg: #0b1220;           /* slate-950-ish */
-      --fg: #e5e7eb;           /* gray-200 */
-      --muted: #9ea3aa;        /* gray-400 */
-      --accent1: 255 255 255;  /* light */
-      --accent2: 99 102 241;   /* indigo-500 */
-      --accent3: 56 189 248;   /* sky-400 */
-    }
-    @media (prefers-color-scheme: light){
-      :root{ --bg:#f8fafc; --fg:#0b1220; --muted:#475569; }
-    }
-    *{ box-sizing:border-box }
-    html,body{ height:100% }
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      color: var(--fg);
-      background:
-        radial-gradient(1200px 600px at 10% 0%, rgba(var(--accent2)/0.12), transparent 60%),
-        radial-gradient(1000px 500px at 100% 20%, rgba(var(--accent3)/0.10), transparent 60%),
-        linear-gradient(180deg, var(--bg), var(--bg));
-      min-height: 100svh; /* mobile-safe */
-      display: grid;
-      place-items: center;
-      padding: 4rem 1.25rem;
-    }
-    main{
-      width:min(880px, 100%);
-      text-align:center;
-      position: relative;
-      isolation: isolate;
-    }
-    .card{
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      background: color-mix(in oklab, rgba(255,255,255,0.06), transparent);
-      border: 1px solid color-mix(in oklab, rgba(255,255,255,0.20), transparent);
-      border-radius: 28px;
-      padding: clamp(2rem, 6vw, 4rem);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-    }
-    h1{
-      margin:0 0 .6rem;
-      font-size: clamp(3rem, 12vw, 8rem);
-      line-height: 0.95;
-      letter-spacing: -0.02em;
-      font-weight: 800;
-      background: linear-gradient(90deg, rgba(var(--accent2)/0.9), rgba(var(--accent3)/0.9));
-      -webkit-background-clip: text; background-clip: text; color: transparent;
-    }
-    p.tagline{
-      margin: 0 0 1.25rem;
-      font-size: clamp(1rem, 2.8vw, 1.25rem);
-      color: var(--muted);
-    }
-    .dot{
-      position: absolute; inset:auto auto -22px 50%; translate:-50% 0;
-      width: 10px; height: 10px; border-radius: 999px;
-      background: radial-gradient(circle at 30% 30%, rgba(var(--accent2)/.9), rgba(var(--accent3)/.9));
-      box-shadow: 0 2px 16px rgba(0,0,0,.35), 0 0 40px rgba(56,189,248,.35);
-    }
-    footer{
-      position: fixed; left: 0; right: 0; bottom: 0;
-      display: grid; place-items: center;
-      padding: .75rem 1rem; font-size: .85rem; color: var(--muted);
-      pointer-events: none; /* non-interactive */
-    }
-    .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0 }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nakshatra Pardeshi | Personal Portfolio</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            colors: {
+              primary: '#0a192f',    // Deep Navy
+              secondary: '#ccd6f6',  // Light Slate
+              lightest: '#8892b0', // Darker Slate
+              accent: '#14B8A6',     // Teal
+            },
+          },
+        },
+      }
+    </script>
+
+    <style>
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #0a192f; /* primary */
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #14B8A6; /* accent */
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #11a394;
+      }
+
+      /* Keyframes for animations */
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
+      @keyframes slideUpFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Page load fade-in */
+      #content-wrapper {
+        opacity: 0;
+        animation: fadeIn 1.5s ease-out 0.2s forwards;
+      }
+
+      /* Scroll-to-reveal utility class */
+      .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s cubic-bezier(0.17, 0.55, 0.55, 1), transform 0.8s cubic-bezier(0.17, 0.55, 0.55, 1);
+      }
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    </style>
 </head>
-<body>
-  <a class="sr-only" href="#content">Skip to content</a>
-  <main id="content" aria-label="Homepage">
-    <div class="card" role="group" aria-label="Greeting">
-      <h1>Namskar</h1>
-      <p class="tagline">Welcome to <strong>nakshatrapardeshi.com</strong></p>
-      <span class="dot" aria-hidden="true"></span>
-    </div>
-  </main>
-  <footer>
-    <small>© <span id="y"></span> Nakshatra Pardeshi</small>
-  </footer>
-  <script>
-    // Tiny enhancement: keep the copyright year fresh
-    document.getElementById('y').textContent = new Date().getFullYear();
-  </script>
+
+<body class="bg-primary text-secondary font-sans overflow-x-hidden">
+
+    <canvas id="particle-canvas" class="fixed top-0 left-0 w-full h-full z-0"></canvas>
+
+    <div id="content-wrapper" class="relative z-10">
+        
+        <main class="max-w-4xl mx-auto px-6 py-12 md:py-24">
+
+            <section id="hero" class="min-h-screen flex flex-col justify-center">
+                <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4">
+                    Nakshatra Pardeshi
+                </h1>
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-medium text-accent mb-8">
+                    Digital Creator & Tech Enthusiast
+                </h2>
+                <a href="#contact" class="inline-block px-8 py-3 text-lg font-medium text-accent border-2 border-accent rounded-lg transition-all duration-300 hover:bg-accent/10 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent/20 w-fit">
+                    Get in Touch
+                </a>
+            </section>
+
+            <section id="about" class="my-24 md:my-32 reveal">
+                <h3 class="text-3xl font-bold text-white mb-6 flex items-center">
+                    <span class="text-accent text-2xl font-mono mr-3">01.</span> About Me
+                </h3>
+                <div class="space-y-5 text-lg text-lightest max-w-3xl">
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                    </p>
+                    <p>
+                        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
+                </div>
+            </section>
+
+            <section id="contact" class="my-24 md:my-32 reveal">
+                <h3 class="text-3xl font-bold text-white mb-8 flex items-center">
+                    <span class="text-accent text-2xl font-mono mr-3">02.</span> Contact & Links
+                </h3>
+                
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
+                    
+                    <a href="mailto:nakshatrapardeshi@gmail.com" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
+                        <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        <span class="font-medium text-sm">Email</span>
+                    </a>
+
+                    <a href="https://www.nakshatrapardeshi.com" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
+                        <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                        <span class="font-medium text-sm">Website</span>
+                    </a>
+
+                    <a href="https://www.instagram.com/nakshatrapardeshi/" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
+                        <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                        <span class="font-medium text-sm">Instagram</span>
+                    </a>
+                    
+                    <a href="https://meta.ai/@nakshatrapardeshi/" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
+                        <svg class="w-8 h-8 mb-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.04C6.5 2.04 2 6.53 2 12.06c0 5.52 4.5 10.02 10 10.02 5.52 0 10-4.5 10-10.02C22 6.53 17.52 2.04 12 2.04zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/><path d="M12 6.5c-3.03 0-5.5 2.47-5.5 5.5s2.47 5.5 5.5 5.5 5.5-2.47 5.5-5.5-2.47-5.5-5.5-5.5zm0 9c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
+                        <span class="font-medium text-sm">Meta AI</span>
+                    </a>
+
+                    <a href="[YOUR_LINKEDIN_PROFILE_URL_HERE]" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
+                        <svg class="w-8 h-8 mb-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                        <span class="font-medium text-sm">LinkedIn</span>
+                    </a>
+
+                    <a href="https://www.threads.com/@nakshatrapardeshi" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
+                        <svg class="w-8 h-8 mb-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13.403 21.918c-.018.002-.035.004-.052.006l-.164.018c-3.11.23-5.832-1.226-7.368-3.486C4.282 16.208 3.1 13.522 3.1 10.15c0-4.08 2.183-7.643 5.48-9.394.12-.064.24-.127.36-.188C10.04 0 11.007 0 12 0c.99 0 1.956 0 3.056.568.12.06.24.124.36.188 3.298 1.75 5.48 5.313 5.48 9.394 0 3.37-1.182 6.057-2.72 8.307-1.535 2.26-4.257 3.717-7.366 3.487l-.165-.018c-.017-.002-.034-.004-.052-.006zm-.322-1.977c.106.008.213.012.322.012.21 0 .418-.008.625-.024 2.38-.17 4.39-1.31 5.57-2.996C20.66 15.01 21.5 12.6 21.5 10.15c0-3.41-1.838-6.41-4.708-7.89-.092-.048-.184-.097-.276-.142C15.82 1.73 14.515 1.4 12 1.4c-2.51 0-3.815.33-4.512.718-.092.045-.184.094-.277.142-2.87 1.48-4.708 4.48-4.708 7.89 0 2.45.84 4.86 1.902 6.772 1.18 2.05 3.51 3.32 6.09 3.32zM12 8.168c-2.2 0-4.06 1.63-4.06 3.832 0 2.2 1.86 3.83 4.06 3.83 2.2 0 4.06-1.63 4.06-3.83 0-2.2-1.86-3.832-4.06-3.832z"/></svg>
+                        <span class="font-medium text-sm">Threads</span>
+                    </a>
+
+                    <a href="https://medium.com/@nakshatrapardeshi" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
+                        <svg class="w-8 h-8 mb-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7.45 18.02c.32-.01.62-.01.9-.02 2.61-.1 4.22-1.54 4.22-4.43V6.03h3.81v7.65c0 3.38-1.5 6.01-4.71 6.34-.1.01-.2.01-.3.02-2.79.08-4.82-1.29-5.17-3.95H2v1.17c.3 4.54 3.73 6.6 8.44 6.57h.01zM18.83 6.03h4.15v11.66h-3.91V6.03zM2.06 6.03h4.15v8.3H2.06V6.03z"/></svg>
+                        <span class="font-medium text-sm">Medium</span>
+                    </a>
+
+                    <a href="https://www.youtube.com/@nakshatrapardeshi" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
+                        <svg class="w-8 h-8 mb-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        <span class="font-medium text-sm">YouTube</span>
+                    </a>
+
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center py-8 text-lightest text-sm">
+            <div>
+                Designed & Built by Nakshatra Pardeshi
+            </div>
+        </footer>
+
+    </div> <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- 1. Particle Background Animation ---
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 2 + 1;
+                    this.speedX = Math.random() * 0.5 - 0.25;
+                    this.speedY = Math.random() * 0.5 - 0.25;
+                    this.color = 'rgba(20, 184, 166, 0.4)'; // accent with opacity
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+
+                    if (this.size > 0.1) this.size -= 0.01;
+                    if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                    if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+                }
+                draw() {
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            function initParticles() {
+                for (let i = 0; i < 75; i++) {
+                    particles.push(new Particle());
+                }
+            }
+            initParticles();
+
+            function animateParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                    particles[i].draw();
+                    if (particles[i].size <= 0.1) {
+                        particles.splice(i, 1);
+                        particles.push(new Particle());
+                        i--;
+                    }
+                }
+                requestAnimationFrame(animateParticles);
+            }
+            animateParticles();
+
+            // --- 2. Scroll-to-Reveal Animation ---
+            const revealElements = document.querySelectorAll('.reveal');
+            
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            revealElements.forEach(el => {
+                observer.observe(el);
+            });
+
+        });
+    </script>
 </body>
 </html>
