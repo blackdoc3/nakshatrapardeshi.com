@@ -1,10 +1,100 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Namaskar</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Namskar — Nakshatra Pardeshi</title>
+  <meta name="description" content="Minimal one‑page site for Nakshatra Pardeshi" />
+  <meta property="og:title" content="Namskar — Nakshatra Pardeshi" />
+  <meta property="og:description" content="Minimal, classy one‑pager" />
+  <meta property="og:type" content="website" />
+  <meta name="theme-color" content="#0f172a" />
+  <style>
+    :root{
+      --bg: #0b1220;           /* slate-950-ish */
+      --fg: #e5e7eb;           /* gray-200 */
+      --muted: #9ea3aa;        /* gray-400 */
+      --accent1: 255 255 255;  /* light */
+      --accent2: 99 102 241;   /* indigo-500 */
+      --accent3: 56 189 248;   /* sky-400 */
+    }
+    @media (prefers-color-scheme: light){
+      :root{ --bg:#f8fafc; --fg:#0b1220; --muted:#475569; }
+    }
+    *{ box-sizing:border-box }
+    html,body{ height:100% }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--fg);
+      background:
+        radial-gradient(1200px 600px at 10% 0%, rgba(var(--accent2)/0.12), transparent 60%),
+        radial-gradient(1000px 500px at 100% 20%, rgba(var(--accent3)/0.10), transparent 60%),
+        linear-gradient(180deg, var(--bg), var(--bg));
+      min-height: 100svh; /* mobile-safe */
+      display: grid;
+      place-items: center;
+      padding: 4rem 1.25rem;
+    }
+    main{
+      width:min(880px, 100%);
+      text-align:center;
+      position: relative;
+      isolation: isolate;
+    }
+    .card{
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      background: color-mix(in oklab, rgba(255,255,255,0.06), transparent);
+      border: 1px solid color-mix(in oklab, rgba(255,255,255,0.20), transparent);
+      border-radius: 28px;
+      padding: clamp(2rem, 6vw, 4rem);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+    h1{
+      margin:0 0 .6rem;
+      font-size: clamp(3rem, 12vw, 8rem);
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      font-weight: 800;
+      background: linear-gradient(90deg, rgba(var(--accent2)/0.9), rgba(var(--accent3)/0.9));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    p.tagline{
+      margin: 0 0 1.25rem;
+      font-size: clamp(1rem, 2.8vw, 1.25rem);
+      color: var(--muted);
+    }
+    .dot{
+      position: absolute; inset:auto auto -22px 50%; translate:-50% 0;
+      width: 10px; height: 10px; border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, rgba(var(--accent2)/.9), rgba(var(--accent3)/.9));
+      box-shadow: 0 2px 16px rgba(0,0,0,.35), 0 0 40px rgba(56,189,248,.35);
+    }
+    footer{
+      position: fixed; left: 0; right: 0; bottom: 0;
+      display: grid; place-items: center;
+      padding: .75rem 1rem; font-size: .85rem; color: var(--muted);
+      pointer-events: none; /* non-interactive */
+    }
+    .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0 }
+  </style>
 </head>
 <body>
-    <h1>Namaskar</h1>
+  <a class="sr-only" href="#content">Skip to content</a>
+  <main id="content" aria-label="Homepage">
+    <div class="card" role="group" aria-label="Greeting">
+      <h1>Namskar</h1>
+      <p class="tagline">Welcome to <strong>nakshatrapardeshi.com</strong></p>
+      <span class="dot" aria-hidden="true"></span>
+    </div>
+  </main>
+  <footer>
+    <small>© <span id="y"></span> Nakshatra Pardeshi</small>
+  </footer>
+  <script>
+    // Tiny enhancement: keep the copyright year fresh
+    document.getElementById('y').textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
