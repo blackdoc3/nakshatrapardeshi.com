@@ -1,67 +1,411 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8">
-  <title>Namaskar</title>
-  <style>
-    body {
-      margin: 0;
-      background-color: #ffffff;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
-    }
-    #greeting {
-      position: absolute;
-      top: 30%;
-      width: 100%;
-      text-align: center;
-      font-size: 48px;
-      color: #333333;
-      z-index: 0;
-    }
-    #car-container {
-      position: absolute;
-      top: 60%;
-      transform: translateY(-50%);
-      width: 350px;
-      left: 100%;
-      animation: drive 8s linear forwards;
-      z-index: 1;
-    }
-    #car-container img {
-      width: 100%;
-      display: block;
-    }
-    .wheel {
-      position: absolute;
-      bottom: 5px;
-      width: 60px;
-      height: 60px;
-      border: 5px solid #333;
-      border-radius: 50%;
-      background: transparent;
-      animation: spin 1s linear infinite;
-    }
-    .wheel.left {
-      left: 60px;
-    }
-    .wheel.right {
-      right: 60px;
-    }
-    @keyframes drive {
-      from { left: 100%; }
-      to { left: -400px; }
-    }
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(-360deg); }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nakshatra Pardeshi | Personal Portfolio</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            colors: {
+              primary: '#0a192f',
+              secondary: '#ccd6f6',
+              lightest: '#8892b0',
+              accent: '#14B8A6',
+            },
+          },
+        },
+      }
+    </script>
+
+    <style>
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #0a192f;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #14B8A6;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #11a394;
+      }
+
+      /* Keyframes for animations */
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
+      @keyframes slideUpFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Page load fade-in */
+      #content-wrapper {
+        opacity: 0;
+        animation: fadeIn 1.5s ease-out 0.2s forwards;
+      }
+
+      /* Scroll-to-reveal utility class */
+      .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s cubic-bezier(0.17, 0.55, 0.55, 1), transform 0.8s cubic-bezier(0.17, 0.55, 0.55, 1);
+      }
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      
+      /* --- Styles for Interactive Tab Section --- */
+      @keyframes tab-fade-in {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+      }
+      .tab-fade-in {
+          animation: tab-fade-in 0.5s ease-out forwards;
+      }
+      .tab-button.active {
+          color: #14B8A6;
+          border-color: #14B8A6;
+          background-color: #14B8A61A;
+      }
+
+      /* Car animation */
+      #car-container {
+        position: absolute;
+        bottom: 0;
+        left: 100%;
+        width: 350px;
+        height: 150px;
+        animation: driveCar 8s linear forwards;
+        z-index: 2;
+      }
+      #car-container img {
+        width: 100%;
+        display: block;
+      }
+      .wheel {
+        position: absolute;
+        bottom: 5px;
+        width: 60px;
+        height: 60px;
+        border: 5px solid #333;
+        border-radius: 50%;
+        background: transparent;
+        animation: spinWheel 1s linear infinite;
+      }
+      .wheel.left {
+        left: 60px;
+      }
+      .wheel.right {
+        right: 60px;
+      }
+      @keyframes driveCar {
+        from { left: 100%; }
+        to { left: -400px; }
+      }
+      @keyframes spinWheel {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(-360deg); }
+      }
+    </style>
 </head>
-<body>
-  <div id="greeting">Namaskar</div>
-  <div id="car-container">
-    <img src="https://banner2.cleanpng.com/20240405/zio/transparent-porsche-911-turbo-s-porsche-911-gt3-rs-sports-car-sleek-porsche-911-gt3-rs-on-black-background660f95a6d72910.50821009.webp" alt="Porsche 911 GT3 RS">
-  </div>
+
+<body class="bg-primary text-secondary font-sans overflow-x-hidden">
+
+    <canvas id="particle-canvas" class="fixed top-0 left-0 w-full h-full z-0"></canvas>
+
+    <div id="content-wrapper" class="relative z-10">
+        
+        <main class="max-w-4xl mx-auto px-6 py-12 md:py-24">
+
+            <section id="hero" class="min-h-screen flex flex-col justify-center relative">
+                <div id="car-container">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6e/Porsche_GT3_RS.png" alt="Porsche 911 GT3 RS">
+                    <div class="wheel left"></div>
+                    <div class="wheel right"></div>
+                </div>
+                <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4">
+                    Nakshatra Pardeshi
+                </h1>
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-medium text-accent mb-8">
+                    Digital Creator & Tech Enthusiast
+                </h2>
+                <a href="#contact" class="inline-block px-8 py-3 text-lg font-medium text-accent border-2 border-accent rounded-lg transition-all duration-300 hover:bg-accent/10 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent/20 w-fit">
+                    Get in Touch
+                </a>
+            </section>
+
+            <section id="about" class="my-24 md:my-32 reveal">
+                <h3 class="text-3xl font-bold text-white mb-6 flex items-center">
+                    <span class="text-accent text-2xl font-mono mr-3">01.</span> About Me
+                </h3>
+                <div class="space-y-5 text-lg text-lightest max-w-3xl">
+                    <p>
+                        I'm a digital creator and tech enthusiast passionate about building beautiful, functional, and user-centric digital experiences. My work lives at the intersection of creative design and cutting-edge technology.
+                    </p>
+                    <p>
+                        I'm driven by Arthur C. Clarke's idea that any "sufficiently advanced technology is indistinguishable from magic." My work is a pursuit of that magic—turning complex code and abstract logic into fluid, intuitive, and almost-living digital experiences that feel effortless for the end-user.
+                    </p>
+                </div>
+            </section>
+
+            <section id="what-i-do" class="my-24 md:my-32 reveal">
+                <h3 class="text-3xl font-bold text-white mb-8 flex items-center">
+                    <span class="text-accent text-2xl font-mono mr-3">02.</span> What I Do
+                </h3>
+
+                <div class="flex flex-col md:flex-row gap-6 md:gap-10">
+                    <div class="flex md:flex-col overflow-x-auto -mx-6 px-6 md:mx-0 md:px-0 md:border-l-2 md:border-gray-700/50">
+                        <button class="tab-button active text-left whitespace-nowrap px-4 py-3 md:pl-6 border-b-2 md:border-b-0 md:border-l-2 -mb-px md:-ml-px text-lightest font-mono transition-all duration-300" data-tab-target="tab-design">
+                            UI/UX Design
+                        </button>
+                        <button class="tab-button text-left whitespace-nowrap px-4 py-3 md:pl-6 border-b-2 md:border-b-0 md:border-l-2 -mb-px md:-ml-px border-transparent text-lightest font-mono transition-all duration-300" data-tab-target="tab-dev">
+                            Development
+                        </button>
+                        <button class="tab-button text-left whitespace-nowrap px-4 py-3 md:pl-6 border-b-2 md:border-b-0 md:border-l-2 -mb-px md:-ml-px border-transparent text-lightest font-mono transition-all duration-300" data-tab-target="tab-creator">
+                            Digital Strategy
+                        </button>
+                    </div>
+
+                    <div class="relative w-full min-h-[250px]">
+                        <div id="tab-design" class="tab-panel active absolute top-0 left-0 text-lightest space-y-4 tab-fade-in">
+                            <h4 class="text-xl font-bold text-secondary">Crafting User-Centric Experiences</h4>
+                            <p>I design intuitive and beautiful user interfaces that solve real problems. My focus is on creating a seamless flow from the first click to the final conversion, ensuring every interaction feels natural and engaging.</p>
+                            <ul class="list-disc list-inside space-y-2 text-accent">
+                                <li><span class="text-lightest">Wireframing & Prototyping</span></li>
+                                <li><span class="text-lightest">Responsive Web Design</span></li>
+                                <li><span class="text-lightest">Interaction & Motion Design</span></li>
+                            </ul>
+                        </div>
+                        
+                        <div id="tab-dev" class="tab-panel hidden absolute top-0 left-0 text-lightest space-y-4">
+                            <h4 class="text-xl font-bold text-secondary">Bringing Ideas to Life with Code</h4>
+                            <p>I build clean, efficient, and scalable web applications. From a static landing page (like this one!) to a complex data-driven platform, I love turning a design concept into a high-performance reality.</p>
+                            <ul class="list-disc list-inside space-y-2 text-accent">
+                                <li><span class="text-lightest">React & Next.js</span></li>
+                                <li><span class="text-lightest">Node.js & Serverless</span></li>
+                                <li><span class="text-lightest">Modern CSS (Tailwind, Framer Motion)</span></li>
+                            </ul>
+                        </div>
+
+                        <div id="tab-creator" class="tab-panel hidden absolute top-0 left-0 text-lightest space-y-4">
+                            <h4 class="text-xl font-bold text-secondary">Connecting Content with Technology</h4>
+                            <p>Being a "Digital Creator" is more than just content; it's about strategy. I explore how new technologies like AI and new platforms can be leveraged to build communities and tell compelling stories.</p>
+                            <ul class="list-disc list-inside space-y-2 text-accent">
+                                <li><span class="text-lightest">Content Creation & Virality</span></li>
+                                <li><span class="text-lightest">AI & Automation Workflows</span></li>
+                                <li><span class="text-lightest">Community Building</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="contact" class="my-24 md:my-32 reveal">
+                <h3 class="text-3xl font-bold text-white mb-8 flex items-center">
+                    <span class="text-accent text-2xl font-mono mr-3">03.</span> Contact & Links
+                </h3>
+                
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
+                    
+                    <a href="mailto:nakshatrapardeshi@gmail.com" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
+                        <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        <span class="font-medium text-sm">Email</span>
+                    </a>
+
+                    <a href="https://www.nakshatrapardeshi.com" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
+                        <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                        <span class="font-medium text-sm">Website</span>
+                    </a>
+
+                    <a href="https://www.instagram.com/nakshatrapardeshi/" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
+                        <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                        <span class="font-medium text-sm">Instagram</span>
+                    </a>
+                    
+                    <a href="https://meta.ai/@nakshatrapardeshi/" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
+                        <svg class="w-8 h-8 mb-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.04C6.5 2.04 2 6.53 2 12.06c0 5.52 4.5 10.02 10 10.02 5.52 0 10-4.5 10-10.02C22 6.53 17.52 2.04 12 2.04zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/><path d="M12 6.5c-3.03 0-5.5 2.47-5.5 5.5s2.47 5.5 5.5 5.5 5.5-2.47 5.5-5.5-2.47-5.5-5.5-5.5zm0 9c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
+                        <span class="font-medium text-sm">Meta AI</span>
+                    </a>
+
+                    <a href="https://uk.linkedin.com/in/nakshatrapardeshi" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
+                        <svg class="w-8 h-8 mb-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                        <span class="font-medium text-sm">LinkedIn</span>
+                    </a>
+
+                    <a href="https://www.threads.com/@nakshatrapardeshi" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
+                        <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.206" />
+                        </svg>
+                        <span class="font-medium text-sm">Threads</span>
+                    </a>
+
+                    <a href="https://medium.com/@nakshatrapardeshi" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
+                        <svg class="w-8 h-8 mb-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13.54 12c0 2.1-1.6 3.82-3.54 3.82-1.93 0-3.52-1.72-3.52-3.82s1.59-3.8 3.52-3.8c1.94 0 3.54 1.7 3.54 3.8zm6.53 0c0 4.2-3.03 7.6-6.75 7.6-3.73 0-6.76-3.4-6.76-7.6s3.03-7.6 6.76-7.6c3.72 0 6.75 3.4 6.75 7.6zM24 12c0 5.16-3.9 9.32-8.72 9.32C10.42 21.32 6.5 17.16 6.5 12S10.42 2.68 15.28 2.68C20.1 2.68 24 6.84 24 12z"/>
+                        </svg>
+                        <span class="font-medium text-sm">Medium</span>
+                    </a>
+
+                    <a href="https://www.youtube.com/@nakshatrapardeshi" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
+                        <svg class="w-8 h-8 mb-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        <span class="font-medium text-sm">YouTube</span>
+                    </a>
+
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center py-8 text-lightest text-sm">
+            <div>
+                Designed & Built by Nakshatra Pardeshi
+            </div>
+        </footer>
+
+    </div> <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- 1. Particle Background Animation ---
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 2 + 1;
+                    this.speedX = Math.random() * 0.5 - 0.25;
+                    this.speedY = Math.random() * 0.5 - 0.25;
+                    this.color = 'rgba(20, 184, 166, 0.4)'; // accent with opacity
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+
+                    if (this.size > 0.1) this.size -= 0.01;
+                    if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                    if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+                }
+                draw() {
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            function initParticles() {
+                for (let i = 0; i < 75; i++) {
+                    particles.push(new Particle());
+                }
+            }
+            initParticles();
+
+            function animateParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                    particles[i].draw();
+                    if (particles[i].size <= 0.1) {
+                        particles.splice(i, 1);
+                        particles.push(new Particle());
+                        i--;
+                    }
+                }
+                requestAnimationFrame(animateParticles);
+            }
+            animateParticles();
+
+            // --- 2. Scroll-to-Reveal Animation ---
+            const revealElements = document.querySelectorAll('.reveal');
+            
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            revealElements.forEach(el => {
+                observer.observe(el);
+            });
+            
+            // --- 3. Interactive "What I Do" Tabs ---
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabPanels = document.querySelectorAll('.tab-panel');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetPanelId = button.getAttribute('data-tab-target');
+                    
+                    // Update button active states
+                    tabButtons.forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    button.classList.add('active');
+
+                    // Update panel visibility and animation
+                    tabPanels.forEach(panel => {
+                        if (panel.id === targetPanelId) {
+                            panel.classList.remove('hidden');
+                            // We add the animation class *after* it's no longer hidden
+                            setTimeout(() => {
+                                panel.classList.add('tab-fade-in');
+                            }, 10);
+                        } else {
+                            panel.classList.add('hidden');
+                            panel.classList.remove('tab-fade-in');
+                        }
+                    });
+                });
+            });
+
+        });
+    </script>
 </body>
 </html>
