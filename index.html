@@ -19,23 +19,51 @@
       color: #333333;
       z-index: 0;
     }
-    #car {
+    #car-container {
       position: absolute;
       top: 60%;
       transform: translateY(-50%);
-      width: 300px;
-      left: -400px;
+      width: 350px;
+      left: 100%;
       animation: drive 8s linear forwards;
       z-index: 1;
     }
+    #car-container img {
+      width: 100%;
+      display: block;
+    }
+    .wheel {
+      position: absolute;
+      bottom: 5px;
+      width: 60px;
+      height: 60px;
+      border: 5px solid #333;
+      border-radius: 50%;
+      background: transparent;
+      animation: spin 1s linear infinite;
+    }
+    .wheel.left {
+      left: 60px;
+    }
+    .wheel.right {
+      right: 60px;
+    }
     @keyframes drive {
-      from { left: -400px; }
-      to { left: 100%; }
+      from { left: 100%; }
+      to { left: -400px; }
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(-360deg); }
     }
   </style>
 </head>
 <body>
   <div id="greeting">Namaskar</div>
-  <img id="car" src="https://upload.wikimedia.org/wikipedia/commons/6/6e/Porsche_GT3_RS.png" alt="Porsche 911 GT3 RS">
+  <div id="car-container">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6e/Porsche_GT3_RS.png" alt="Porsche 911 GT3 RS">
+    <div class="wheel left"></div>
+    <div class="wheel right"></div>
+  </div>
 </body>
 </html>
