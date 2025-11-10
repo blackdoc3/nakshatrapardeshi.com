@@ -14,9 +14,7 @@
       tailwind.config = {
         theme: {
           extend: {
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-            },
+            fontFamily: { sans: ['Inter', 'sans-serif'] },
             colors: {
               primary: '#0a192f',
               secondary: '#ccd6f6',
@@ -35,28 +33,23 @@
       ::-webkit-scrollbar-thumb { background: #14B8A6; border-radius: 10px; }
       ::-webkit-scrollbar-thumb:hover { background: #11a394; }
 
-      /* Keyframes for animations */
+      /* Keyframes */
       @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-      @keyframes slideUpFadeIn {
-        from { opacity: 0; transform: translateY(30px); }
-        to   { opacity: 1; transform: translateY(0); }
-      }
+      @keyframes slideUpFadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
       /* Page load fade-in */
       #content-wrapper { opacity: 0; animation: fadeIn 1.5s ease-out 0.2s forwards; }
 
-      /* Scroll-to-reveal utility class */
-      .reveal { opacity: 0; transform: translateY(30px);
-        transition: opacity 0.8s cubic-bezier(0.17, 0.55, 0.55, 1),
-                    transform 0.8s cubic-bezier(0.17, 0.55, 0.55, 1); }
+      /* Scroll-to-reveal */
+      .reveal {
+        opacity: 0; transform: translateY(30px);
+        transition: opacity .8s cubic-bezier(0.17,0.55,0.55,1), transform .8s cubic-bezier(0.17,0.55,0.55,1);
+      }
       .reveal.visible { opacity: 1; transform: translateY(0); }
       
-      /* --- Styles for Interactive Tab Section --- */
-      @keyframes tab-fade-in {
-        from { opacity: 0; transform: translateY(10px); }
-        to   { opacity: 1; transform: translateY(0); }
-      }
-      .tab-fade-in { animation: tab-fade-in 0.5s ease-out forwards; }
+      /* Tabs */
+      @keyframes tab-fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+      .tab-fade-in { animation: tab-fade-in .5s ease-out forwards; }
       .tab-button.active { color: #14B8A6; border-color: #14B8A6; background-color: #14B8A61A; }
 
       /* Car animation */
@@ -68,7 +61,7 @@
       @keyframes driveCar { from { left: 100%; } to { left: -400px; } }
       @keyframes spinWheel { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
 
-      /* ===== Intro Video Overlay (new) ===== */
+      /* ===== Intro Video Overlay ===== */
       .intro {
         position: fixed; inset: 0; z-index: 99999;
         background: #000; display: flex; align-items: center; justify-content: center;
@@ -82,21 +75,16 @@
         background: rgba(255,255,255,.9); font: 600 14px/1.2 system-ui,sans-serif;
         cursor: pointer;
       }
-      /* Respect reduced motion: don’t show intro at all */
+      /* Respect reduced motion: skip intro entirely */
       @media (prefers-reduced-motion: reduce) { .intro { display: none; } }
     </style>
 </head>
 
 <body class="bg-primary text-secondary font-sans overflow-x-hidden">
 
-    <!-- ===== Intro Video Overlay (new) ===== -->
+    <!-- ===== Intro Video Overlay (uses your file with spaces in name) ===== -->
     <div id="intro" class="intro" aria-hidden="true">
-      <video id="introVideo"
-             autoplay
-             muted
-             playsinline
-             preload="auto"
-             poster="/assets/video/poster.jpg">
+      <video id="introVideo" autoplay muted playsinline preload="auto">
         <source src="/media/WhatsApp%20Video%202025-11-10%20at%2013.27.28.mp4" type="video/mp4">
         Your browser doesn’t support the video tag.
       </video>
@@ -104,7 +92,7 @@
     </div>
 
     <script>
-      // Minimal, isolated logic to run before your main JS.
+      // Run before main JS
       (function () {
         const intro = document.getElementById('intro');
         if (!intro) return;
@@ -113,7 +101,7 @@
         const skip  = document.getElementById('skipIntro');
         const html  = document.documentElement;
 
-        // Show only once per browser session. Change to localStorage for "once ever".
+        // Show once per session; change to localStorage for "once per browser"
         const SHOW_ONCE = true;
         if (SHOW_ONCE && sessionStorage.getItem('introSeen') === '1') {
           removeIntro();
@@ -121,20 +109,18 @@
         }
 
         const prevOverflow = html.style.overflow;
-        html.style.overflow = 'hidden'; // prevent background scroll
+        html.style.overflow = 'hidden'; // lock scroll behind overlay
 
-        // Try to start playback (muted autoplay is allowed by browsers)
         const p = video.play();
         if (p && typeof p.catch === 'function') {
-          p.catch(() => endIntro()); // if blocked, just skip
+          p.catch(() => endIntro()); // if autoplay blocked, skip gracefully
         }
 
         video.addEventListener('ended', endIntro);
         video.addEventListener('error', endIntro);
         skip.addEventListener('click', endIntro);
 
-        // Safety cap (e.g., weird codec not firing 'ended')
-        const SAFE_MAX_MS = 45000;
+        const SAFE_MAX_MS = 45000; // safety cap
         const timer = setTimeout(endIntro, SAFE_MAX_MS);
 
         function endIntro() {
@@ -254,7 +240,7 @@
                     </a>
 
                     <a href="https://www.nakshatrapardeshi.com" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
-                        <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m-9 9a9 9 0 019-9"></path></svg>
+                        <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m-9 9a9 9 0 019-9"></path></svg>
                         <span class="font-medium text-sm">Website</span>
                     </a>
 
@@ -304,100 +290,59 @@
 
     </div> 
 
-    <!-- Your existing JS -->
+    <!-- Main JS -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- 1. Particle Background Animation ---
+            // Particle bg
             const canvas = document.getElementById('particle-canvas');
             const ctx = canvas.getContext('2d');
             let particles = [];
-            
-            function resizeCanvas() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
+            function resizeCanvas(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+            resizeCanvas(); window.addEventListener('resize', resizeCanvas);
 
             class Particle {
-                constructor() {
-                    this.x = Math.random() * canvas.width;
-                    this.y = Math.random() * canvas.height;
-                    this.size = Math.random() * 2 + 1;
-                    this.speedX = Math.random() * 0.5 - 0.25;
-                    this.speedY = Math.random() * 0.5 - 0.25;
-                    this.color = 'rgba(20, 184, 166, 0.4)';
-                }
-                update() {
-                    this.x += this.speedX;
-                    this.y += this.speedY;
-
-                    if (this.size > 0.1) this.size -= 0.01;
-                    if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-                    if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
-                }
-                draw() {
-                    ctx.fillStyle = this.color;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fill();
-                }
+                constructor(){ this.x=Math.random()*canvas.width; this.y=Math.random()*canvas.height;
+                    this.size=Math.random()*2+1; this.speedX=Math.random()*0.5-0.25; this.speedY=Math.random()*0.5-0.25;
+                    this.color='rgba(20, 184, 166, 0.4)'; }
+                update(){ this.x+=this.speedX; this.y+=this.speedY;
+                    if(this.size>0.1) this.size-=0.01;
+                    if(this.x<0||this.x>canvas.width) this.speedX*=-1;
+                    if(this.y<0||this.y>canvas.height) this.speedY*=-1; }
+                draw(){ ctx.fillStyle=this.color; ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill(); }
             }
-
-            function initParticles() { for (let i = 0; i < 75; i++) particles.push(new Particle()); }
+            function initParticles(){ for(let i=0;i<75;i++) particles.push(new Particle()); }
             initParticles();
-
-            function animateParticles() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                for (let i = 0; i < particles.length; i++) {
-                    particles[i].update();
-                    particles[i].draw();
-                    if (particles[i].size <= 0.1) {
-                        particles.splice(i, 1);
-                        particles.push(new Particle());
-                        i--;
-                    }
+            function animateParticles(){
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                for (let i=0;i<particles.length;i++){
+                    particles[i].update(); particles[i].draw();
+                    if (particles[i].size<=0.1){ particles.splice(i,1); particles.push(new Particle()); i--; }
                 }
                 requestAnimationFrame(animateParticles);
             }
             animateParticles();
 
-            // --- 2. Scroll-to-Reveal Animation ---
-            const revealElements = document.querySelectorAll('.reveal');
-            const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
-            const observer = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, observerOptions);
-            revealElements.forEach(el => observer.observe(el));
+            // Reveal on scroll
+            const revealElements=document.querySelectorAll('.reveal');
+            const observer=new IntersectionObserver((entries,observer)=>{
+                entries.forEach(entry=>{ if(entry.isIntersecting){ entry.target.classList.add('visible'); observer.unobserve(entry.target); }});
+            },{threshold:0.1});
+            revealElements.forEach(el=>observer.observe(el));
             
-            // --- 3. Interactive "What I Do" Tabs ---
-            const tabButtons = document.querySelectorAll('.tab-button');
-            const tabPanels = document.querySelectorAll('.tab-panel');
-
-            tabButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const targetPanelId = button.getAttribute('data-tab-target');
-                    
-                    tabButtons.forEach(btn => btn.classList.remove('active'));
+            // Tabs
+            const tabButtons=document.querySelectorAll('.tab-button');
+            const tabPanels=document.querySelectorAll('.tab-panel');
+            tabButtons.forEach(button=>{
+                button.addEventListener('click',()=>{
+                    const targetPanelId=button.getAttribute('data-tab-target');
+                    tabButtons.forEach(btn=>btn.classList.remove('active'));
                     button.classList.add('active');
-
-                    tabPanels.forEach(panel => {
-                        if (panel.id === targetPanelId) {
-                            panel.classList.remove('hidden');
-                            setTimeout(() => panel.classList.add('tab-fade-in'), 10);
-                        } else {
-                            panel.classList.add('hidden');
-                            panel.classList.remove('tab-fade-in');
-                        }
+                    tabPanels.forEach(panel=>{
+                        if(panel.id===targetPanelId){ panel.classList.remove('hidden'); setTimeout(()=>panel.classList.add('tab-fade-in'),10); }
+                        else { panel.classList.add('hidden'); panel.classList.remove('tab-fade-in'); }
                     });
                 });
             });
-
         });
     </script>
 </body>
