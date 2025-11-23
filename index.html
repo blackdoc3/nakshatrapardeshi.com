@@ -57,22 +57,8 @@
             transform: translateY(20px);
         }
 
-        .glitch-anim {
-            animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
-            color: #22d3ee;
-        }
-
         @keyframes fadeInUp {
             to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes glitch {
-            0% { transform: translate(0) }
-            20% { transform: translate(-2px, 2px) }
-            40% { transform: translate(-2px, -2px) }
-            60% { transform: translate(2px, 2px) }
-            80% { transform: translate(2px, -2px) }
-            100% { transform: translate(0) }
         }
     </style>
 </head>
@@ -87,19 +73,19 @@
         <div class="space-y-6 max-w-4xl mx-auto flex flex-col items-center">
             <!-- Badge -->
             <div class="fade-in-up" style="animation-delay: 0.2s;">
-                <span id="identityBadge" class="px-4 py-2 rounded-full border border-cyan-500/30 bg-cyan-900/20 text-cyan-300 text-sm tracking-widest uppercase font-bold backdrop-blur-sm transition-all duration-500">
+                <span class="px-4 py-2 rounded-full border border-cyan-500/30 bg-cyan-900/20 text-cyan-300 text-sm tracking-widest uppercase font-bold backdrop-blur-sm transition-all duration-500">
                     Interactive Portfolio
                 </span>
             </div>
 
             <!-- Main Title -->
-            <h1 id="mainTitle" class="text-6xl md:text-8xl font-bold leading-tight tracking-tight glowing-text fade-in-up mix-blend-screen" style="animation-delay: 0.4s;">
+            <h1 class="text-6xl md:text-8xl font-bold leading-tight tracking-tight glowing-text fade-in-up mix-blend-screen" style="animation-delay: 0.4s;">
                 HELLO, I'M <br />
                 <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">NAXXTRA</span>
             </h1>
 
             <!-- Subtitle -->
-            <p id="subTitle" class="text-lg md:text-2xl text-slate-400 max-w-2xl mx-auto fade-in-up transition-all duration-500" style="animation-delay: 0.6s;">
+            <p class="text-lg md:text-2xl text-slate-400 max-w-2xl mx-auto fade-in-up transition-all duration-500" style="animation-delay: 0.6s;">
                 Operations Specialist. <br class="hidden md:block" />
                 Push the particles away to connect.
             </p>
@@ -165,12 +151,6 @@
 
     <!-- GAME CONTROLS (Top Right) -->
     <div class="absolute top-6 right-6 interactive-ui flex gap-3">
-        
-        <!-- GEMINI AI BUTTON -->
-        <button id="multiverseBtn" class="bg-purple-600/20 border border-purple-500/50 text-purple-400 p-3 rounded-lg hover:bg-purple-500 hover:text-white transition-all hover:scale-110 shadow-[0_0_15px_rgba(168,85,247,0.3)]" title="✨ Switch Identity (AI)">
-            <i class="fas fa-sparkles"></i>
-        </button>
-
         <button id="gravityBtn" class="bg-cyan-600/20 border border-cyan-500/50 text-cyan-400 p-3 rounded-lg hover:bg-cyan-500 hover:text-white transition-colors" title="Toggle Gravity">
             <i class="fas fa-magnet"></i>
         </button>
@@ -180,111 +160,6 @@
     </div>
 
     <script>
-        // --------------------------------------------------------
-        // CONFIGURATION SECTION
-        // --------------------------------------------------------
-        
-        /**
-         * IMPORTANT SECURITY NOTE FOR GITHUB DEPLOYMENT:
-         * * GitHub may warn you about "Secrets detected". This is normal for static sites 
-         * that don't have a backend server.
-         * * TO FIX THE WARNING & STAY SAFE:
-         * 1. Go to Google Cloud Console > Credentials > Edit this API Key.
-         * 2. Set "Application restrictions" to "Websites (HTTP referrers)".
-         * 3. Add "nakshatrapardeshi.github.io" and "www.nakshatrapardeshi.com".
-         * 4. Save.
-         * * Once restricted, it is safe to have the key here.
-         */
-
-        // PASTE YOUR NEW, RESTRICTED API KEY INSIDE THE QUOTES BELOW:
-        const apiKey = "AIzaSyChyuW6tvLhAakn8LMmoMaG7B4jWoPqVVg"; 
-        
-        // --------------------------------------------------------
-
-        /**
-         * GEMINI API INTEGRATION
-         */
-        const multiverseBtn = document.getElementById('multiverseBtn');
-        const badgeEl = document.getElementById('identityBadge');
-        const titleEl = document.getElementById('mainTitle');
-        const subtitleEl = document.getElementById('subTitle');
-
-        const originalState = {
-            badge: "Interactive Portfolio",
-            title: `HELLO, I'M <br /><span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">NAXXTRA</span>`,
-            subtitle: `Operations Specialist. <br class="hidden md:block" />Push the particles away to connect.`
-        };
-
-        multiverseBtn.addEventListener('click', async () => {
-            // Safety check for API Key
-            if (apiKey === "AIzaSyChyuW6tvLhAakn8LMmoMaG7B4jWoPqVVg" || apiKey === "") {
-                alert("Please add your Gemini API Key in the code (line 166) to use the AI feature!");
-                return;
-            }
-
-            // Visual Loading State
-            multiverseBtn.classList.add('animate-spin');
-            titleEl.classList.add('glitch-anim');
-            subtitleEl.innerText = "Scanning multiverse frequencies...";
-            badgeEl.innerText = "Quantum Jumping...";
-
-            // Trigger a particle explosion
-            explode(width/2, height/2);
-
-            try {
-                // Using Gemini 1.5 Flash (Fast & Efficient)
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [{
-                                text: `You are controlling a portfolio website in the multiverse. Pick a random, distinct, creative theme (e.g., Cyberpunk, High Fantasy, Noir, Pirate, Sci-Fi, Western, 1980s Hacker, Lovecraftian).
-                                Rewrite the following text to match that theme specifically:
-                                Original Title: 'HELLO, I'M NAXXTRA'
-                                Original Subtitle: 'Operations Specialist. Push the particles away to connect.'
-                                
-                                Rules:
-                                1. Keep the name 'Naxxtra' in the title.
-                                2. Be creative and flavorful.
-                                3. Keep lengths similar to original.
-                                
-                                Return ONLY a JSON object with this structure: 
-                                { "theme": "Theme Name", "title": "New Title HTML", "subtitle": "New Subtitle Text" }`
-                            }]
-                        }],
-                        generationConfig: {
-                            responseMimeType: "application/json"
-                        }
-                    })
-                });
-
-                if (!response.ok) throw new Error('Gemini API Error');
-                
-                const data = await response.json();
-                const result = JSON.parse(data.candidates[0].content.parts[0].text);
-
-                // Apply the new reality
-                badgeEl.innerText = `Theme: ${result.theme}`;
-                titleEl.innerHTML = result.title; 
-                subtitleEl.innerHTML = result.subtitle;
-
-            } catch (error) {
-                console.error(error);
-                subtitleEl.innerText = "Multiverse connection failed. Reverting to timeline Alpha.";
-                setTimeout(() => restoreIdentity(), 2000);
-            } finally {
-                multiverseBtn.classList.remove('animate-spin');
-                titleEl.classList.remove('glitch-anim');
-            }
-        });
-
-        function restoreIdentity() {
-            badgeEl.innerText = originalState.badge;
-            titleEl.innerHTML = originalState.title;
-            subtitleEl.innerHTML = originalState.subtitle;
-        }
-
         /**
          * INTERACTIVE PARTICLE SYSTEM
          */
@@ -487,7 +362,6 @@
 
         resetBtn.addEventListener('click', () => {
             explode(width/2, height/2);
-            restoreIdentity();
             setTimeout(() => {
                 initParticles();
             }, 300);
