@@ -183,7 +183,20 @@
         // --------------------------------------------------------
         // CONFIGURATION SECTION
         // --------------------------------------------------------
+        
+        /**
+         * IMPORTANT SECURITY NOTE FOR GITHUB DEPLOYMENT:
+         * * GitHub may warn you about "Secrets detected". This is normal for static sites 
+         * that don't have a backend server.
+         * * TO FIX THE WARNING & STAY SAFE:
+         * 1. Go to Google Cloud Console > Credentials > Edit this API Key.
+         * 2. Set "Application restrictions" to "Websites (HTTP referrers)".
+         * 3. Add "nakshatrapardeshi.github.io" and "www.nakshatrapardeshi.com".
+         * 4. Save.
+         * * Once restricted, it is safe to have the key here.
+         */
 
+        // PASTE YOUR NEW, RESTRICTED API KEY INSIDE THE QUOTES BELOW:
         const apiKey = "AIzaSyChyuW6tvLhAakn8LMmoMaG7B4jWoPqVVg"; 
         
         // --------------------------------------------------------
@@ -205,7 +218,7 @@
         multiverseBtn.addEventListener('click', async () => {
             // Safety check for API Key
             if (apiKey === "AIzaSyChyuW6tvLhAakn8LMmoMaG7B4jWoPqVVg" || apiKey === "") {
-                alert("Please add your Gemini API Key in the code (line 155) to use the AI feature!");
+                alert("Please add your Gemini API Key in the code (line 166) to use the AI feature!");
                 return;
             }
 
