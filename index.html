@@ -1,622 +1,1 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Naxxtra | Operations Specialist</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        /* --- General Reset --- */
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden; /* Lock scroll initially */
-            background-color: #0f172a; /* Slate 900 */
-            color: white;
-            font-family: 'Rajdhani', sans-serif;
-        }
-
-        /* --- Game Intro Layer --- */
-        #game-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 100; /* Top layer */
-            background-color: #5c94fc;
-            transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
-        }
-
-        #game-canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-            image-rendering: pixelated;
-        }
-
-        .game-ui {
-            position: absolute;
-            font-family: 'Press Start 2P', cursive;
-            text-align: center;
-            pointer-events: none;
-            text-shadow: 2px 2px 0 #000;
-            width: 100%;
-        }
-
-        .skip-btn {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            pointer-events: auto;
-            background: rgba(0,0,0,0.6);
-            color: white;
-            border: 2px solid white;
-            padding: 10px 15px;
-            font-family: 'Press Start 2P', cursive;
-            font-size: 10px;
-            cursor: pointer;
-            z-index: 110;
-        }
-        .skip-btn:hover { background: white; color: black; }
-
-        /* --- Particle Portfolio Layer --- */
-        #portfolio-layer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 1s ease-in;
-            z-index: 0;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* The Canvas for Particles */
-        #particle-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 10; /* Above text, below UI buttons */
-            pointer-events: none; /* Let clicks pass through to links */
-        }
-
-        /* The Text Content (Under Particles) */
-        #content-container {
-            position: relative;
-            z-index: 5; /* Below particles initially */
-            text-align: center;
-            width: 100%;
-            max-width: 1000px;
-            padding: 20px;
-            pointer-events: auto;
-        }
-
-        .cyber-text {
-            font-family: 'Rajdhani', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        
-        .glitch-effect {
-            text-shadow: 2px 2px 0px #ec4899, -2px -2px 0px #3b82f6;
-        }
-
-        /* Social Grid */
-        .social-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 40px;
-        }
-        @media (min-width: 768px) {
-            .social-grid { grid-template-columns: repeat(4, 1fr); }
-        }
-
-        .social-card {
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid #334155;
-            padding: 15px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.2s;
-            text-decoration: none;
-            color: #cbd5e1;
-            font-family: 'Press Start 2P', cursive;
-            font-size: 10px;
-            position: relative;
-            overflow: hidden;
-            z-index: 20; /* Make sure clickable */
-        }
-
-        .social-card:hover {
-            transform: translateY(-2px) scale(1.02);
-            border-color: #38bdf8;
-            background: rgba(56, 189, 248, 0.1);
-            color: white;
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
-        }
-
-        .social-card i {
-            font-size: 16px;
-            width: 24px;
-            text-align: center;
-        }
-
-        /* Gravity Toggle Button */
-        #gravity-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 50;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            padding: 12px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.3s;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        #gravity-btn:hover {
-            background: #e11d48;
-            border-color: #e11d48;
-            transform: scale(1.1);
-        }
-        #gravity-btn.active {
-            background: #22c55e;
-            border-color: #22c55e;
-            box-shadow: 0 0 20px #22c55e;
-        }
-
-        /* Active State for body */
-        body.site-active #game-container {
-            transform: translateY(-100%);
-        }
-        body.site-active #portfolio-layer {
-            opacity: 1;
-        }
-    </style>
-</head>
-<body>
-
-    <!-- === 1. RETRO GAME INTRO LAYER === -->
-    <div id="game-container">
-        <canvas id="game-canvas"></canvas>
-        
-        <div class="game-ui" style="top: 40%;">
-            <h1 class="text-3xl md:text-5xl mb-4 text-white">RETRO RUNNER</h1>
-            <p class="text-xs md:text-sm text-yellow-300 animate-pulse">REACH THE FLAG TO ENTER</p>
-        </div>
-
-        <div class="game-ui" style="bottom: 20px;">
-            <p class="text-[10px] text-white opacity-80">SPACE / TAP TO JUMP</p>
-        </div>
-
-        <button id="skip-btn" class="skip-btn">SKIP INTRO >></button>
-    </div>
-
-    <!-- === 2. INTERACTIVE PORTFOLIO LAYER === -->
-    <div id="portfolio-layer">
-        
-        <!-- Canvas for Particles (Overlay) -->
-        <canvas id="particle-canvas"></canvas>
-
-        <!-- Magnet Gravity Button -->
-        <button id="gravity-btn" title="Toggle Gravity">
-            <i class="fa-solid fa-magnet text-xl"></i>
-        </button>
-
-        <!-- Main Content -->
-        <div id="content-container">
-            <h2 class="text-green-400 font-mono text-sm mb-2 tracking-widest">SYSTEM UNLOCKED</h2>
-            <h1 class="text-6xl md:text-8xl font-bold mb-2 cyber-text glitch-effect">NAXXTRA</h1>
-            <p class="text-xl md:text-2xl text-blue-300 font-light tracking-[0.2em] mb-12">OPERATIONS SPECIALIST</p>
-
-            <!-- Social Grid -->
-            <div class="social-grid">
-                <a href="mailto:nakshatrapardeshi@gmail.com" class="social-card">
-                    <i class="fa-solid fa-envelope text-red-400"></i>
-                    <span>MAIL</span>
-                </a>
-                <a href="https://www.nakshatrapardeshi.com" target="_blank" class="social-card">
-                    <i class="fa-solid fa-globe text-blue-400"></i>
-                    <span>WEBSITE</span>
-                </a>
-                <a href="https://www.instagram.com/nakshatrapardeshi" target="_blank" class="social-card">
-                    <i class="fa-brands fa-instagram text-pink-500"></i>
-                    <span>INSTAGRAM</span>
-                </a>
-                <a href="https://uk.linkedin.com/in/nakshatrapardeshi" target="_blank" class="social-card">
-                    <i class="fa-brands fa-linkedin text-blue-600"></i>
-                    <span>LINKEDIN</span>
-                </a>
-                <a href="https://meta.ai/@nakshatrapardeshi" target="_blank" class="social-card">
-                    <i class="fa-solid fa-brain text-purple-500"></i>
-                    <span>META AI</span>
-                </a>
-                <a href="https://www.threads.com/@nakshatrapardeshi" target="_blank" class="social-card">
-                    <i class="fa-brands fa-threads text-white"></i>
-                    <span>THREADS</span>
-                </a>
-                <a href="https://medium.com/@nakshatrapardeshi" target="_blank" class="social-card">
-                    <i class="fa-brands fa-medium text-white"></i>
-                    <span>MEDIUM</span>
-                </a>
-                <a href="https://www.youtube.com/@nakshatrapardeshi" target="_blank" class="social-card">
-                    <i class="fa-brands fa-youtube text-red-600"></i>
-                    <span>YOUTUBE</span>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- === SCRIPTS === -->
-    <script>
-    (function() { // Start IIFE to prevent global scope pollution
-        /* =========================================
-           PART 1: THE RETRO RUNNER GAME
-           ========================================= */
-        const gameCanvas = document.getElementById('game-canvas');
-        const gCtx = gameCanvas.getContext('2d');
-        const gameContainer = document.getElementById('game-container');
-        
-        let gameRunning = false;
-        let gameWon = false;
-        let gameFrameId;
-        
-        // Game State
-        const GAME_GRAVITY = 0.6; // Renamed to avoid conflicts
-        const JUMP = -12;
-        let scroll = 0;
-        
-        const hero = { x: 50, y: 0, w: 30, h: 30, dy: 0, grounded: false };
-        const map = [
-            {x: 400, w: 40, h: 40, t: 'box'},
-            {x: 700, w: 30, h: 30, t: 'spike'},
-            {x: 1100, w: 40, h: 60, t: 'box'},
-            {x: 1400, w: 30, h: 30, t: 'spike'},
-            {x: 1440, w: 30, h: 30, t: 'spike'},
-            {x: 2000, w: 10, h: 200, t: 'flag'} // Finish
-        ];
-
-        function resizeGame() {
-            gameCanvas.width = window.innerWidth;
-            gameCanvas.height = window.innerHeight;
-            if(!gameRunning) hero.y = gameCanvas.height - 60 - hero.h;
-        }
-        window.addEventListener('resize', resizeGame);
-
-        function initGame() {
-            scroll = 0;
-            hero.y = gameCanvas.height - 60 - hero.h;
-            hero.dy = 0;
-            gameRunning = true;
-            resizeGame();
-            gameLoop();
-        }
-
-        function gameLoop() {
-            if (!gameRunning) return;
-
-            // Update
-            scroll += 5;
-            hero.dy += GAME_GRAVITY;
-            hero.y += hero.dy;
-            
-            // Floor
-            if (hero.y + hero.h > gameCanvas.height - 60) {
-                hero.y = gameCanvas.height - 60 - hero.h;
-                hero.dy = 0;
-                hero.grounded = true;
-            } else {
-                hero.grounded = false;
-            }
-
-            // Collisions
-            const screenGround = gameCanvas.height - 60;
-            map.forEach(obj => {
-                let ox = obj.x - scroll;
-                // Box/Spike logic simplified for brevity
-                if (hero.x < ox + obj.w && hero.x + hero.w > ox &&
-                    hero.y + hero.h > screenGround - obj.h) {
-                    if (obj.t === 'spike') {
-                         // Die: Reset
-                         scroll = 0;
-                         hero.y = screenGround - hero.h; // Reset pos slightly
-                    } else if (obj.t === 'box') {
-                         // Die: Reset
-                         scroll = 0;
-                    } else if (obj.t === 'flag') {
-                        gameRunning = false;
-                        unlockSite();
-                    }
-                }
-            });
-
-            // Draw
-            gCtx.fillStyle = '#5c94fc';
-            gCtx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
-            
-            // Floor
-            gCtx.fillStyle = '#5D4037';
-            gCtx.fillRect(0, gameCanvas.height - 60, gameCanvas.width, 60);
-            gCtx.fillStyle = '#4CAF50';
-            gCtx.fillRect(0, gameCanvas.height - 60, gameCanvas.width, 10);
-
-            // Objects
-            map.forEach(obj => {
-                let ox = obj.x - scroll;
-                if(ox > -100 && ox < gameCanvas.width) {
-                    if(obj.t === 'box') {
-                        gCtx.fillStyle = '#fbbf24'; gCtx.fillRect(ox, screenGround - obj.h, obj.w, obj.h);
-                        gCtx.strokeStyle = '#b45309'; gCtx.strokeRect(ox, screenGround - obj.h, obj.w, obj.h);
-                    } else if(obj.t === 'spike') {
-                        gCtx.fillStyle = '#9ca3af';
-                        gCtx.beginPath();
-                        gCtx.moveTo(ox, screenGround);
-                        gCtx.lineTo(ox + obj.w/2, screenGround - obj.h);
-                        gCtx.lineTo(ox + obj.w, screenGround);
-                        gCtx.fill();
-                    } else if(obj.t === 'flag') {
-                        gCtx.fillStyle = '#fff'; gCtx.fillRect(ox, screenGround - 200, 5, 200);
-                        gCtx.fillStyle = 'red'; gCtx.fillRect(ox+5, screenGround-200, 40, 30);
-                    }
-                }
-            });
-
-            // Player (Mario-ish)
-            const px = hero.x, py = hero.y;
-            gCtx.fillStyle = '#ef4444'; // Hat
-            gCtx.fillRect(px, py, 30, 10);
-            gCtx.fillStyle = '#2563eb'; // Overalls
-            gCtx.fillRect(px+5, py+10, 20, 20);
-            gCtx.fillStyle = '#ffccaa'; // Face
-            gCtx.fillRect(px+5, py+5, 20, 10);
-
-            gameFrameId = requestAnimationFrame(gameLoop);
-        }
-
-        // Input
-        window.addEventListener('keydown', e => {
-            if((e.code === 'Space' || e.code === 'ArrowUp') && hero.grounded) {
-                hero.dy = JUMP; hero.grounded = false;
-            }
-        });
-        window.addEventListener('touchstart', () => {
-             if(hero.grounded) { hero.dy = JUMP; hero.grounded = false; }
-        });
-        window.addEventListener('mousedown', () => {
-             if(hero.grounded) { hero.dy = JUMP; hero.grounded = false; }
-        });
-
-        /* =========================================
-           PART 2: PARTICLE SYSTEM (THE REWARD)
-           ========================================= */
-        
-        function unlockSite() {
-            // Stop Game
-            gameRunning = false;
-            cancelAnimationFrame(gameFrameId);
-            
-            // Transition UI
-            document.body.classList.add('site-active');
-            
-            // Init Particles
-            initParticles();
-        }
-
-        // Attach listener here since unlockSite is now local
-        document.getElementById('skip-btn').addEventListener('click', unlockSite);
-
-        const pCanvas = document.getElementById('particle-canvas');
-        const pCtx = pCanvas.getContext('2d');
-        const gravityBtn = document.getElementById('gravity-btn');
-        
-        let particles = [];
-        let mouse = { x: null, y: null, radius: 150 };
-        let gravityEnabled = false;
-        let shockwave = 0;
-
-        // Toggle Gravity
-        gravityBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Don't trigger shockwave
-            gravityEnabled = !gravityEnabled;
-            gravityBtn.classList.toggle('active');
-            
-            // Pop effect
-            particles.forEach(p => {
-                p.vy = -Math.random() * 5; // Little jump
-            });
-        });
-
-        class Particle {
-            constructor(x, y) {
-                this.x = x;
-                this.y = y;
-                this.baseX = x;
-                this.baseY = y;
-                this.size = Math.random() * 3 + 1;
-                this.density = (Math.random() * 30) + 1;
-                this.vx = 0;
-                this.vy = 0;
-                this.color = Math.random() > 0.5 ? '#38bdf8' : '#818cf8'; // Tailwind sky-400 or indigo-400
-            }
-
-            draw() {
-                pCtx.fillStyle = this.color;
-                pCtx.beginPath();
-                pCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                pCtx.closePath();
-                pCtx.fill();
-            }
-
-            update() {
-                if (gravityEnabled) {
-                    // === GRAVITY MODE ===
-                    this.vy += 0.5; // Gravity force
-                    this.y += this.vy;
-                    this.x += this.vx;
-
-                    // Floor bounce
-                    if (this.y + this.size > pCanvas.height) {
-                        this.y = pCanvas.height - this.size;
-                        this.vy *= -0.6; // Lose energy
-                        this.vx *= 0.9;  // Friction
-                    }
-                    // Walls
-                    if (this.x + this.size > pCanvas.width || this.x - this.size < 0) {
-                        this.vx *= -1;
-                    }
-                } else {
-                    // === CONSTELLATION MODE ===
-                    
-                    // Mouse Interaction (Flee)
-                    let dx = mouse.x - this.x;
-                    let dy = mouse.y - this.y;
-                    let distance = Math.sqrt(dx * dx + dy * dy);
-                    
-                    // Shockwave force calculation
-                    let forceDirectionX = dx / distance;
-                    let forceDirectionY = dy / distance;
-                    let maxDistance = mouse.radius + shockwave;
-                    let force = (maxDistance - distance) / maxDistance;
-                    
-                    let directionX = forceDirectionX * force * this.density;
-                    let directionY = forceDirectionY * force * this.density;
-
-                    if (distance < mouse.radius + shockwave) {
-                        this.x -= directionX;
-                        this.y -= directionY;
-                    } else {
-                        // Return to base position
-                        if (this.x !== this.baseX) {
-                            let dx = this.x - this.baseX;
-                            this.x -= dx / 20; // Ease back speed
-                        }
-                        if (this.y !== this.baseY) {
-                            let dy = this.y - this.baseY;
-                            this.y -= dy / 20;
-                        }
-                    }
-                }
-            }
-        }
-
-        function initParticles() {
-            pCanvas.width = window.innerWidth;
-            pCanvas.height = window.innerHeight;
-            particles = [];
-            
-            // Create a dense cloud in the center (where text is)
-            // and scattered particles elsewhere
-            const numberOfParticles = (pCanvas.width * pCanvas.height) / 8000;
-            
-            for (let i = 0; i < numberOfParticles; i++) {
-                let x = Math.random() * pCanvas.width;
-                let y = Math.random() * pCanvas.height;
-                particles.push(new Particle(x, y));
-            }
-            
-            // Extra density over the text area
-            for(let i=0; i<100; i++) {
-                let x = (pCanvas.width/2 - 300) + Math.random() * 600;
-                let y = (pCanvas.height/2 - 100) + Math.random() * 200;
-                particles.push(new Particle(x, y));
-            }
-
-            animateParticles();
-        }
-
-        function animateParticles() {
-            pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
-            
-            for (let i = 0; i < particles.length; i++) {
-                particles[i].draw();
-                particles[i].update();
-            }
-            
-            // Draw Constellation Lines (Only if not in gravity mode and close enough)
-            if (!gravityEnabled) {
-                connectParticles();
-            }
-
-            // Decay shockwave
-            if(shockwave > 0) shockwave -= 5;
-
-            requestAnimationFrame(animateParticles);
-        }
-
-        function connectParticles() {
-            let opacityValue = 1;
-            for (let a = 0; a < particles.length; a++) {
-                for (let b = a; b < particles.length; b++) {
-                    let dx = particles[a].x - particles[b].x;
-                    let dy = particles[a].y - particles[b].y;
-                    let distance = dx * dx + dy * dy;
-
-                    if (distance < 3600) { // Max distance squared (60px)
-                        opacityValue = 1 - (distance / 3600);
-                        pCtx.strokeStyle = 'rgba(148, 163, 184,' + opacityValue + ')'; // Slate-400
-                        pCtx.lineWidth = 1;
-                        pCtx.beginPath();
-                        pCtx.moveTo(particles[a].x, particles[a].y);
-                        pCtx.lineTo(particles[b].x, particles[b].y);
-                        pCtx.stroke();
-                    }
-                }
-            }
-        }
-
-        // Mouse Listeners for Portfolio
-        window.addEventListener('mousemove', (e) => {
-            mouse.x = e.x;
-            mouse.y = e.y;
-        });
-
-        // Touch for Mobile
-        window.addEventListener('touchmove', (e) => {
-            mouse.x = e.touches[0].clientX;
-            mouse.y = e.touches[0].clientY;
-        });
-
-        // Shockwave Click
-        window.addEventListener('click', (e) => {
-            // Only if not clicking a link or button
-            if (e.target.tagName !== 'A' && e.target.tagName !== 'BUTTON' && !e.target.closest('a') && !e.target.closest('button')) {
-                shockwave = 200; // Trigger explosion
-                setTimeout(() => shockwave = 0, 500);
-            }
-        });
-        
-        window.addEventListener('resize', () => {
-            pCanvas.width = window.innerWidth;
-            pCanvas.height = window.innerHeight;
-            // Re-init on severe resize? keeping it simple for now
-        });
-
-        // Start Game
-        initGame();
-
-    })(); // End IIFE
-    </script>
-</body>
-</html>
+<!DOCTYPE html> <html lang="en"> <head>     <meta charset="UTF-8">     <meta name="viewport" content="width=device-width, initial-scale=1.0">     <title>Naxxtra | Operations Specialist</title>     <!-- Tailwind CSS -->     <script src="https://cdn.tailwindcss.com"></script>     <!-- Fonts -->     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">     <!-- FontAwesome for Icons -->     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">          <style>         /* --- General Reset --- */         body {             margin: 0;             padding: 0;             overflow: hidden; /* Lock scroll initially */             background-color: #0f172a; /* Slate 900 */             color: white;             font-family: 'Rajdhani', sans-serif;             user-select: none;         }          /* --- Game Intro Layer --- */         #game-container {             position: fixed;             top: 0;             left: 0;             width: 100%;             height: 100%;             z-index: 100; /* Top layer */             background-color: #5c94fc;             transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);         }          #game-canvas {             width: 100%;             height: 100%;             display: block;             image-rendering: pixelated;         }          .game-ui {             position: absolute;             font-family: 'Press Start 2P', cursive;             text-align: center;             pointer-events: none;             text-shadow: 2px 2px 0 #000;             width: 100%;         }          /* --- Particle Portfolio Layer --- */         #portfolio-layer {             position: fixed;             top: 0;             left: 0;             width: 100%;             height: 100%;             opacity: 0;             transition: opacity 1s ease-in;             z-index: 0;             overflow: hidden;             display: flex;             align-items: center;             justify-content: center;         }          /* The Canvas for Particles */         #particle-canvas {             position: absolute;             top: 0;             left: 0;             width: 100%;             height: 100%;             z-index: 10; /* Above text, below UI buttons */             pointer-events: none; /* Let clicks pass through to links */         }          /* The Text Content (Under Particles) */         #content-container {             position: relative;             z-index: 5; /* Below particles initially */             text-align: center;             width: 100%;             max-width: 1000px;             padding: 20px;             pointer-events: auto;         }          .cyber-text {             font-family: 'Rajdhani', sans-serif;             text-transform: uppercase;             letter-spacing: 2px;         }                  .glitch-effect {             text-shadow: 2px 2px 0px #ec4899, -2px -2px 0px #3b82f6;         }          /* Social Grid */         .social-grid {             display: grid;             grid-template-columns: repeat(2, 1fr);             gap: 15px;             margin-top: 40px;         }         @media (min-width: 768px) {             .social-grid { grid-template-columns: repeat(4, 1fr); }         }          .social-card {             background: rgba(15, 23, 42, 0.8);             border: 1px solid #334155;             padding: 15px;             border-radius: 4px;             display: flex;             align-items: center;             gap: 10px;             transition: all 0.2s;             text-decoration: none;             color: #cbd5e1;             font-family: 'Press Start 2P', cursive;             font-size: 10px;             position: relative;             overflow: hidden;             z-index: 20; /* Make sure clickable */         }          .social-card:hover {             transform: translateY(-2px) scale(1.02);             border-color: #38bdf8;             background: rgba(56, 189, 248, 0.1);             color: white;             box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);         }          .social-card i {             font-size: 16px;             width: 24px;             text-align: center;         }          /* Gravity Toggle Button */         #gravity-btn {             position: absolute;             top: 20px;             right: 20px;             z-index: 50;             background: rgba(255, 255, 255, 0.1);             border: 1px solid rgba(255, 255, 255, 0.3);             color: white;             padding: 12px;             border-radius: 50%;             cursor: pointer;             transition: all 0.3s;             width: 50px;             height: 50px;             display: flex;             align-items: center;             justify-content: center;         }         #gravity-btn:hover {             background: #e11d48;             border-color: #e11d48;             transform: scale(1.1);         }         #gravity-btn.active {             background: #22c55e;             border-color: #22c55e;             box-shadow: 0 0 20px #22c55e;         }          /* Active State for body */         body.site-active #game-container {             transform: translateY(-100%);         }         body.site-active #portfolio-layer {             opacity: 1;         }     </style> </head> <body>      <!-- === 1. RETRO GAME INTRO LAYER === -->     <div id="game-container">         <canvas id="game-canvas"></canvas>                  <div class="game-ui" style="top: 40%;">             <!-- Removed Heading -->             <p class="text-xs md:text-sm text-yellow-300 animate-pulse">REACH THE FLAG TO ENTER</p>         </div>          <div class="game-ui" style="bottom: 20px;">             <p class="text-[10px] text-white opacity-80">SPACE / TAP TO JUMP</p>         </div>          <!-- Removed Skip Button -->     </div>      <!-- === 2. INTERACTIVE PORTFOLIO LAYER === -->     <div id="portfolio-layer">                  <!-- Canvas for Particles (Overlay) -->         <canvas id="particle-canvas"></canvas>          <!-- Magnet Gravity Button -->         <button id="gravity-btn" title="Toggle Gravity">             <i class="fa-solid fa-magnet text-xl"></i>         </button>          <!-- Main Content -->         <div id="content-container">             <h2 class="text-green-400 font-mono text-sm mb-2 tracking-widest">SYSTEM UNLOCKED</h2>             <h1 class="text-6xl md:text-8xl font-bold mb-2 cyber-text glitch-effect">NAXXTRA</h1>             <p class="text-xl md:text-2xl text-blue-300 font-light tracking-[0.2em] mb-12">OPERATIONS SPECIALIST</p>              <!-- Social Grid -->             <div class="social-grid">                 <a href="mailto:nakshatrapardeshi@gmail.com" class="social-card">                     <i class="fa-solid fa-envelope text-red-400"></i>                     <span>MAIL</span>                 </a>                 <a href="https://www.nakshatrapardeshi.com" target="_blank" class="social-card">                     <i class="fa-solid fa-globe text-blue-400"></i>                     <span>WEBSITE</span>                 </a>                 <a href="https://www.instagram.com/nakshatrapardeshi" target="_blank" class="social-card">                     <i class="fa-brands fa-instagram text-pink-500"></i>                     <span>INSTAGRAM</span>                 </a>                 <a href="https://uk.linkedin.com/in/nakshatrapardeshi" target="_blank" class="social-card">                     <i class="fa-brands fa-linkedin text-blue-600"></i>                     <span>LINKEDIN</span>                 </a>                 <a href="https://meta.ai/@nakshatrapardeshi" target="_blank" class="social-card">                     <i class="fa-solid fa-brain text-purple-500"></i>                     <span>META AI</span>                 </a>                 <a href="https://www.threads.com/@nakshatrapardeshi" target="_blank" class="social-card">                     <i class="fa-brands fa-threads text-white"></i>                     <span>THREADS</span>                 </a>                 <a href="https://medium.com/@nakshatrapardeshi" target="_blank" class="social-card">                     <i class="fa-brands fa-medium text-white"></i>                     <span>MEDIUM</span>                 </a>                 <a href="https://www.youtube.com/@nakshatrapardeshi" target="_blank" class="social-card">                     <i class="fa-brands fa-youtube text-red-600"></i>                     <span>YOUTUBE</span>                 </a>             </div>         </div>     </div>      <!-- === SCRIPTS === -->     <script>     (function() { // Start IIFE         /* =========================================            PART 1: THE RETRO RUNNER GAME            ========================================= */         const gameCanvas = document.getElementById('game-canvas');         const gCtx = gameCanvas.getContext('2d');         const gameContainer = document.getElementById('game-container');                  let gameRunning = false;         let gameFrameId;                  // Game State         const GAME_GRAVITY = 0.6;         const JUMP = -12;         let scroll = 0;                  const hero = { x: 50, y: 0, w: 30, h: 30, dy: 0, grounded: false };         const map = [             {x: 400, w: 40, h: 40, t: 'box'},             {x: 700, w: 30, h: 30, t: 'spike'},             {x: 1100, w: 40, h: 60, t: 'box'},             {x: 1400, w: 30, h: 30, t: 'spike'},             {x: 1440, w: 30, h: 30, t: 'spike'},             {x: 2000, w: 10, h: 200, t: 'flag'} // Finish         ];          function resizeGame() {             gameCanvas.width = window.innerWidth;             gameCanvas.height = window.innerHeight;             if(!gameRunning) hero.y = gameCanvas.height - 60 - hero.h;         }         window.addEventListener('resize', resizeGame);          function initGame() {             scroll = 0;             hero.y = gameCanvas.height - 60 - hero.h;             hero.dy = 0;             gameRunning = true;             resizeGame();             gameLoop();         }          function gameLoop() {             if (!gameRunning) return;              // Update             scroll += 5;             hero.dy += GAME_GRAVITY;             hero.y += hero.dy;                          // Floor             if (hero.y + hero.h > gameCanvas.height - 60) {                 hero.y = gameCanvas.height - 60 - hero.h;                 hero.dy = 0;                 hero.grounded = true;             } else {                 hero.grounded = false;             }              // Collisions             const screenGround = gameCanvas.height - 60;             map.forEach(obj => {                 let ox = obj.x - scroll;                 if (hero.x < ox + obj.w && hero.x + hero.w > ox &&                     hero.y + hero.h > screenGround - obj.h) {                     if (obj.t === 'spike') {                          scroll = 0; // Die                          hero.y = screenGround - hero.h;                     } else if (obj.t === 'box') {                          scroll = 0; // Die                     } else if (obj.t === 'flag') {                         gameRunning = false;                         unlockSite();                     }                 }             });              // Draw             gCtx.fillStyle = '#5c94fc';             gCtx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);                          // Clouds             gCtx.fillStyle = 'rgba(255,255,255,0.5)';             gCtx.beginPath();             gCtx.arc((200 - scroll*0.2) % (gameCanvas.width+200), 100, 30, 0, Math.PI*2);             gCtx.fill();              // Floor             gCtx.fillStyle = '#5D4037';             gCtx.fillRect(0, gameCanvas.height - 60, gameCanvas.width, 60);             gCtx.fillStyle = '#4CAF50';             gCtx.fillRect(0, gameCanvas.height - 60, gameCanvas.width, 10);              // Objects             map.forEach(obj => {                 let ox = obj.x - scroll;                 if(ox > -100 && ox < gameCanvas.width) {                     if(obj.t === 'box') {                         gCtx.fillStyle = '#fbbf24'; gCtx.fillRect(ox, screenGround - obj.h, obj.w, obj.h);                         gCtx.strokeStyle = '#b45309'; gCtx.strokeRect(ox, screenGround - obj.h, obj.w, obj.h);                     } else if(obj.t === 'spike') {                         gCtx.fillStyle = '#9ca3af';                         gCtx.beginPath();                         gCtx.moveTo(ox, screenGround);                         gCtx.lineTo(ox + obj.w/2, screenGround - obj.h);                         gCtx.lineTo(ox + obj.w, screenGround);                         gCtx.fill();                     } else if(obj.t === 'flag') {                         gCtx.fillStyle = '#fff'; gCtx.fillRect(ox, screenGround - 200, 5, 200);                         gCtx.fillStyle = 'red'; gCtx.fillRect(ox+5, screenGround-200, 40, 30);                     }                 }             });              // Player (Mario-ish)             const px = hero.x, py = hero.y;             gCtx.fillStyle = '#ef4444'; // Hat             gCtx.fillRect(px, py, 30, 10);             gCtx.fillStyle = '#2563eb'; // Overalls             gCtx.fillRect(px+5, py+10, 20, 20);             gCtx.fillStyle = '#ffccaa'; // Face             gCtx.fillRect(px+5, py+5, 20, 10);                          // Legs running animation             if(hero.grounded) {                 const leg = Math.sin(scroll * 0.2) * 5;                 gCtx.fillStyle = '#451a03'; // Shoes                 gCtx.fillRect(px + 5 - leg, py + 25, 8, 5);                 gCtx.fillRect(px + 15 + leg, py + 25, 8, 5);             } else {                 gCtx.fillStyle = '#451a03'; // Jump Shoes                 gCtx.fillRect(px + 2, py + 25, 8, 5);                 gCtx.fillRect(px + 20, py + 20, 8, 5);             }              gameFrameId = requestAnimationFrame(gameLoop);         }          // Input         window.addEventListener('keydown', e => {             if((e.code === 'Space' || e.code === 'ArrowUp') && hero.grounded) {                 hero.dy = JUMP; hero.grounded = false;             }         });         window.addEventListener('touchstart', () => {              if(hero.grounded) { hero.dy = JUMP; hero.grounded = false; }         }, {passive: false});         window.addEventListener('mousedown', () => {              if(hero.grounded) { hero.dy = JUMP; hero.grounded = false; }         });          // Start Game         initGame();           /* =========================================            PART 2: PARTICLE SYSTEM (THE REWARD)            ========================================= */                  function unlockSite() {             // Stop Game             gameRunning = false;             cancelAnimationFrame(gameFrameId);                          // Transition UI             document.body.classList.add('site-active');                          // Init Particles             initParticles();         }          const pCanvas = document.getElementById('particle-canvas');         const pCtx = pCanvas.getContext('2d');         const gravityBtn = document.getElementById('gravity-btn');                  let particles = [];         let mouse = { x: null, y: null, radius: 150 };         let gravityEnabled = false;         let shockwave = 0;          // Toggle Gravity         gravityBtn.addEventListener('click', (e) => {             e.stopPropagation(); // Don't trigger shockwave             gravityEnabled = !gravityEnabled;             gravityBtn.classList.toggle('active');                          // Pop effect             particles.forEach(p => {                 p.vy = -Math.random() * 5; // Little jump             });         });          class Particle {             constructor(x, y) {                 this.x = x;                 this.y = y;                 this.baseX = x;                 this.baseY = y;                 this.size = Math.random() * 3 + 1;                 this.density = (Math.random() * 30) + 1;                 this.vx = 0;                 this.vy = 0;                 this.color = Math.random() > 0.5 ? '#38bdf8' : '#818cf8'; // Tailwind sky-400 or indigo-400             }              draw() {                 pCtx.fillStyle = this.color;                 pCtx.beginPath();                 pCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);                 pCtx.closePath();                 pCtx.fill();             }              update() {                 if (gravityEnabled) {                     // === GRAVITY MODE ===                     this.vy += 0.5; // Gravity force                     this.y += this.vy;                     this.x += this.vx;                      // Floor bounce                     if (this.y + this.size > pCanvas.height) {                         this.y = pCanvas.height - this.size;                         this.vy *= -0.6; // Lose energy                         this.vx *= 0.9;  // Friction                     }                     // Walls                     if (this.x + this.size > pCanvas.width || this.x - this.size < 0) {                         this.vx *= -1;                     }                 } else {                     // === CONSTELLATION MODE ===                                          // Mouse Interaction (Flee)                     let dx = mouse.x - this.x;                     let dy = mouse.y - this.y;                     let distance = Math.sqrt(dx * dx + dy * dy);                                          // Shockwave force calculation                     let forceDirectionX = dx / distance;                     let forceDirectionY = dy / distance;                     let maxDistance = mouse.radius + shockwave;                     let force = (maxDistance - distance) / maxDistance;                                          let directionX = forceDirectionX * force * this.density;                     let directionY = forceDirectionY * force * this.density;                      if (distance < mouse.radius + shockwave) {                         this.x -= directionX;                         this.y -= directionY;                     } else {                         // Return to base position                         if (this.x !== this.baseX) {                             let dx = this.x - this.baseX;                             this.x -= dx / 20; // Ease back speed                         }                         if (this.y !== this.baseY) {                             let dy = this.y - this.baseY;                             this.y -= dy / 20;                         }                     }                 }             }         }          function initParticles() {             pCanvas.width = window.innerWidth;             pCanvas.height = window.innerHeight;             particles = [];                          // Create a dense cloud in the center (where text is)             // and scattered particles elsewhere             const numberOfParticles = (pCanvas.width * pCanvas.height) / 8000;                          for (let i = 0; i < numberOfParticles; i++) {                 let x = Math.random() * pCanvas.width;                 let y = Math.random() * pCanvas.height;                 particles.push(new Particle(x, y));             }                          // Extra density over the text area             for(let i=0; i<100; i++) {                 let x = (pCanvas.width/2 - 300) + Math.random() * 600;                 let y = (pCanvas.height/2 - 100) + Math.random() * 200;                 particles.push(new Particle(x, y));             }              animateParticles();         }          function animateParticles() {             pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);                          for (let i = 0; i < particles.length; i++) {                 particles[i].draw();                 particles[i].update();             }                          // Draw Constellation Lines (Only if not in gravity mode and close enough)             if (!gravityEnabled) {                 connectParticles();             }              // Decay shockwave             if(shockwave > 0) shockwave -= 5;              requestAnimationFrame(animateParticles);         }          function connectParticles() {             let opacityValue = 1;             for (let a = 0; a < particles.length; a++) {                 for (let b = a; b < particles.length; b++) {                     let dx = particles[a].x - particles[b].x;                     let dy = particles[a].y - particles[b].y;                     let distance = dx * dx + dy * dy;                      if (distance < 3600) { // Max distance squared (60px)                         opacityValue = 1 - (distance / 3600);                         pCtx.strokeStyle = 'rgba(148, 163, 184,' + opacityValue + ')'; // Slate-400                         pCtx.lineWidth = 1;                         pCtx.beginPath();                         pCtx.moveTo(particles[a].x, particles[a].y);                         pCtx.lineTo(particles[b].x, particles[b].y);                         pCtx.stroke();                     }                 }             }         }          // Mouse Listeners for Portfolio         window.addEventListener('mousemove', (e) => {             mouse.x = e.x;             mouse.y = e.y;         });          // Touch for Mobile         window.addEventListener('touchmove', (e) => {             mouse.x = e.touches[0].clientX;             mouse.y = e.touches[0].clientY;         });          // Shockwave Click         window.addEventListener('click', (e) => {             // Only if not clicking a link or button             if (e.target.tagName !== 'A' && e.target.tagName !== 'BUTTON' && !e.target.closest('a') && !e.target.closest('button')) {                 shockwave = 200; // Trigger explosion                 setTimeout(() => shockwave = 0, 500);             }         });                  window.addEventListener('resize', () => {             pCanvas.width = window.innerWidth;             pCanvas.height = window.innerHeight;         });      })(); // End IIFE     </script> </body> </html>  
