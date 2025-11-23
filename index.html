@@ -4,373 +4,619 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Naxxtra | Operations Specialist</title>
-    
-    <!-- Tailwind CSS (Styling) -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Font Awesome (Icons) -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* --- General Reset --- */
         body {
-            font-family: 'Space Grotesk', sans-serif;
-            overflow: hidden; /* Prevents scrolling bars */
-            background-color: #0f172a; /* Dark Blue Background */
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Lock scroll initially */
+            background-color: #0f172a; /* Slate 900 */
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
         }
-        
-        /* Canvas sits on top of everything to catch mouse movements */
-        #canvas-container {
+
+        /* --- Game Intro Layer --- */
+        #game-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100; /* Top layer */
+            background-color: #5c94fc;
+            transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        #game-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            image-rendering: pixelated;
+        }
+
+        .game-ui {
+            position: absolute;
+            font-family: 'Press Start 2P', cursive;
+            text-align: center;
+            pointer-events: none;
+            text-shadow: 2px 2px 0 #000;
+            width: 100%;
+        }
+
+        .skip-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            pointer-events: auto;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 15px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            cursor: pointer;
+            z-index: 110;
+        }
+        .skip-btn:hover { background: white; color: black; }
+
+        /* --- Particle Portfolio Layer --- */
+        #portfolio-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in;
+            z-index: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* The Canvas for Particles */
+        #particle-canvas {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 20;
-            touch-action: none;
+            z-index: 10; /* Above text, below UI buttons */
+            pointer-events: none; /* Let clicks pass through to links */
         }
 
-        .content-layer {
+        /* The Text Content (Under Particles) */
+        #content-container {
             position: relative;
-            z-index: 10;
-            pointer-events: none; /* Let clicks pass through to canvas */
+            z-index: 5; /* Below particles initially */
+            text-align: center;
+            width: 100%;
+            max-width: 1000px;
+            padding: 20px;
+            pointer-events: auto;
         }
 
-        /* Re-enable clicking for buttons */
-        .interactive-ui {
-            pointer-events: auto; 
-            z-index: 30;
+        .cyber-text {
+            font-family: 'Rajdhani', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .glitch-effect {
+            text-shadow: 2px 2px 0px #ec4899, -2px -2px 0px #3b82f6;
         }
 
-        .glowing-text {
-            text-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
-            transition: all 0.5s ease;
+        /* Social Grid */
+        .social-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 40px;
+        }
+        @media (min-width: 768px) {
+            .social-grid { grid-template-columns: repeat(4, 1fr); }
         }
 
-        .fade-in-up {
-            animation: fadeInUp 1s ease-out forwards;
-            opacity: 0;
-            transform: translateY(20px);
+        .social-card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid #334155;
+            padding: 15px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: #cbd5e1;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            position: relative;
+            overflow: hidden;
+            z-index: 20; /* Make sure clickable */
         }
 
-        @keyframes fadeInUp {
-            to { opacity: 1; transform: translateY(0); }
+        .social-card:hover {
+            transform: translateY(-2px) scale(1.02);
+            border-color: #38bdf8;
+            background: rgba(56, 189, 248, 0.1);
+            color: white;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+        }
+
+        .social-card i {
+            font-size: 16px;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* Gravity Toggle Button */
+        #gravity-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 50;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #gravity-btn:hover {
+            background: #e11d48;
+            border-color: #e11d48;
+            transform: scale(1.1);
+        }
+        #gravity-btn.active {
+            background: #22c55e;
+            border-color: #22c55e;
+            box-shadow: 0 0 20px #22c55e;
+        }
+
+        /* Active State for body */
+        body.site-active #game-container {
+            transform: translateY(-100%);
+        }
+        body.site-active #portfolio-layer {
+            opacity: 1;
         }
     </style>
 </head>
-<body class="text-white h-screen w-screen relative">
+<body>
 
-    <!-- CANVAS OVERLAY -->
-    <canvas id="heroCanvas"></canvas>
-
-    <!-- CONTENT UNDERLAY -->
-    <main class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center content-layer">
+    <!-- === 1. RETRO GAME INTRO LAYER === -->
+    <div id="game-container">
+        <canvas id="game-canvas"></canvas>
         
-        <div class="space-y-6 max-w-4xl mx-auto flex flex-col items-center">
-            <!-- Badge -->
-            <div class="fade-in-up" style="animation-delay: 0.2s;">
-                <span class="px-4 py-2 rounded-full border border-cyan-500/30 bg-cyan-900/20 text-cyan-300 text-sm tracking-widest uppercase font-bold backdrop-blur-sm transition-all duration-500">
-                    Interactive Portfolio
-                </span>
-            </div>
-
-            <!-- Main Title -->
-            <h1 class="text-6xl md:text-8xl font-bold leading-tight tracking-tight glowing-text fade-in-up mix-blend-screen" style="animation-delay: 0.4s;">
-                HELLO, I'M <br />
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">NAXXTRA</span>
-            </h1>
-
-            <!-- Subtitle -->
-            <p class="text-lg md:text-2xl text-slate-400 max-w-2xl mx-auto fade-in-up transition-all duration-500" style="animation-delay: 0.6s;">
-                Operations Specialist. <br class="hidden md:block" />
-                Push the particles away to connect.
-            </p>
-
-            <!-- SOCIAL MEDIA INVENTORY GRID -->
-            <div class="mt-8 fade-in-up interactive-ui" style="animation-delay: 0.8s;">
-                <div class="bg-slate-900/80 backdrop-blur-md border border-slate-700 p-4 rounded-xl shadow-2xl relative">
-                    <!-- Inventory Label -->
-                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-slate-800 border border-slate-600 px-3 py-1 rounded text-xs text-cyan-400 font-mono tracking-widest uppercase">
-                        Connection Nodes
-                    </div>
-                    
-                    <div class="grid grid-cols-4 gap-3 md:gap-4 mt-2">
-                        <!-- Website -->
-                        <a href="https://www.nakshatrapardeshi.com" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-cyan-400 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(34,211,238,0.4)]" title="Website">
-                            <i class="fas fa-globe text-xl md:text-2xl text-slate-400 group-hover:text-cyan-400 transition-colors"></i>
-                        </a>
-
-                        <!-- Mail -->
-                        <a href="mailto:nakshatrapardeshi@gmail.com" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-emerald-400 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(52,211,153,0.4)]" title="Email Me">
-                            <i class="fas fa-envelope text-xl md:text-2xl text-slate-400 group-hover:text-emerald-400 transition-colors"></i>
-                        </a>
-
-                        <!-- LinkedIn -->
-                        <a href="https://uk.linkedin.com/in/nakshatrapardeshi" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-blue-400 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(96,165,250,0.4)]" title="LinkedIn">
-                            <i class="fab fa-linkedin text-xl md:text-2xl text-slate-400 group-hover:text-blue-400 transition-colors"></i>
-                        </a>
-
-                        <!-- Instagram -->
-                        <a href="https://www.instagram.com/nakshatrapardeshi" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-pink-500 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(236,72,153,0.4)]" title="Instagram">
-                            <i class="fab fa-instagram text-xl md:text-2xl text-slate-400 group-hover:text-pink-500 transition-colors"></i>
-                        </a>
-                        
-                        <!-- Meta AI -->
-                        <a href="https://meta.ai/@nakshatrapardeshi" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-blue-600 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(37,99,235,0.4)]" title="Meta AI">
-                            <i class="fas fa-robot text-xl md:text-2xl text-slate-400 group-hover:text-blue-600 transition-colors"></i>
-                        </a>
-
-                        <!-- Threads -->
-                        <a href="https://www.threads.com/@nakshatrapardeshi" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-white hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(255,255,255,0.4)]" title="Threads">
-                            <i class="fas fa-at text-xl md:text-2xl text-slate-400 group-hover:text-white transition-colors"></i>
-                        </a>
-
-                        <!-- YouTube -->
-                        <a href="https://www.youtube.com/@nakshatrapardeshi" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-red-500 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(239,68,68,0.4)]" title="YouTube">
-                            <i class="fab fa-youtube text-xl md:text-2xl text-slate-400 group-hover:text-red-500 transition-colors"></i>
-                        </a>
-
-                        <!-- Medium -->
-                        <a href="https://medium.com/@nakshatrapardeshi" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-yellow-400 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(250,204,21,0.4)]" title="Medium">
-                            <i class="fab fa-medium text-xl md:text-2xl text-slate-400 group-hover:text-yellow-400 transition-colors"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
+        <div class="game-ui" style="top: 40%;">
+            <h1 class="text-3xl md:text-5xl mb-4 text-white">RETRO RUNNER</h1>
+            <p class="text-xs md:text-sm text-yellow-300 animate-pulse">REACH THE FLAG TO ENTER</p>
         </div>
 
-        <!-- Scroll Indicator -->
-        <div class="absolute bottom-10 animate-bounce fade-in-up text-slate-500" style="animation-delay: 1.2s;">
-            <i class="fas fa-chevron-down text-2xl"></i>
+        <div class="game-ui" style="bottom: 20px;">
+            <p class="text-[10px] text-white opacity-80">SPACE / TAP TO JUMP</p>
         </div>
-    </main>
 
-    <!-- GAME CONTROLS (Top Right) -->
-    <div class="absolute top-6 right-6 interactive-ui flex gap-3">
-        <button id="gravityBtn" class="bg-cyan-600/20 border border-cyan-500/50 text-cyan-400 p-3 rounded-lg hover:bg-cyan-500 hover:text-white transition-colors" title="Toggle Gravity">
-            <i class="fas fa-magnet"></i>
-        </button>
-        <button id="resetBtn" class="bg-slate-700/50 border border-slate-600 text-slate-300 p-3 rounded-lg hover:bg-slate-600 transition-colors" title="Reset Particles">
-            <i class="fas fa-redo"></i>
-        </button>
+        <button id="skip-btn" class="skip-btn">SKIP INTRO >></button>
     </div>
 
-    <script>
-        /**
-         * INTERACTIVE PARTICLE SYSTEM
-         */
-        const canvas = document.getElementById('heroCanvas');
-        const ctx = canvas.getContext('2d');
+    <!-- === 2. INTERACTIVE PORTFOLIO LAYER === -->
+    <div id="portfolio-layer">
         
-        let width, height;
-        let particles = [];
-        let mouse = { x: -1000, y: -1000 };
-        
-        // Physics Configuration
-        const CONFIG = {
-            particleCount: 0, 
-            particleBaseSize: 3,
-            connectionDistance: 100,
-            repulsionRadius: 150,
-            repulsionForce: 5,
-            friction: 0.95,
-            returnSpeed: 0.02,
-            gravity: false,
-            colors: ['#22d3ee', '#818cf8', '#c084fc', '#e879f9'] 
-        };
+        <!-- Canvas for Particles (Overlay) -->
+        <canvas id="particle-canvas"></canvas>
 
-        // Resize handling
-        function resize() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-            const area = width * height;
-            // Balance performance vs visual density
-            CONFIG.particleCount = Math.min(Math.floor(area / 2500), 800); 
+        <!-- Magnet Gravity Button -->
+        <button id="gravity-btn" title="Toggle Gravity">
+            <i class="fa-solid fa-magnet text-xl"></i>
+        </button>
+
+        <!-- Main Content -->
+        <div id="content-container">
+            <h2 class="text-green-400 font-mono text-sm mb-2 tracking-widest">SYSTEM UNLOCKED</h2>
+            <h1 class="text-6xl md:text-8xl font-bold mb-2 cyber-text glitch-effect">NAXXTRA</h1>
+            <p class="text-xl md:text-2xl text-blue-300 font-light tracking-[0.2em] mb-12">OPERATIONS SPECIALIST</p>
+
+            <!-- Social Grid -->
+            <div class="social-grid">
+                <a href="mailto:nakshatrapardeshi@gmail.com" class="social-card">
+                    <i class="fa-solid fa-envelope text-red-400"></i>
+                    <span>MAIL</span>
+                </a>
+                <a href="https://www.nakshatrapardeshi.com" target="_blank" class="social-card">
+                    <i class="fa-solid fa-globe text-blue-400"></i>
+                    <span>WEBSITE</span>
+                </a>
+                <a href="https://www.instagram.com/nakshatrapardeshi" target="_blank" class="social-card">
+                    <i class="fa-brands fa-instagram text-pink-500"></i>
+                    <span>INSTAGRAM</span>
+                </a>
+                <a href="https://uk.linkedin.com/in/nakshatrapardeshi" target="_blank" class="social-card">
+                    <i class="fa-brands fa-linkedin text-blue-600"></i>
+                    <span>LINKEDIN</span>
+                </a>
+                <a href="https://meta.ai/@nakshatrapardeshi" target="_blank" class="social-card">
+                    <i class="fa-solid fa-brain text-purple-500"></i>
+                    <span>META AI</span>
+                </a>
+                <a href="https://www.threads.com/@nakshatrapardeshi" target="_blank" class="social-card">
+                    <i class="fa-brands fa-threads text-white"></i>
+                    <span>THREADS</span>
+                </a>
+                <a href="https://medium.com/@nakshatrapardeshi" target="_blank" class="social-card">
+                    <i class="fa-brands fa-medium text-white"></i>
+                    <span>MEDIUM</span>
+                </a>
+                <a href="https://www.youtube.com/@nakshatrapardeshi" target="_blank" class="social-card">
+                    <i class="fa-brands fa-youtube text-red-600"></i>
+                    <span>YOUTUBE</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- === SCRIPTS === -->
+    <script>
+    (function() { // Start IIFE to prevent global scope pollution
+        /* =========================================
+           PART 1: THE RETRO RUNNER GAME
+           ========================================= */
+        const gameCanvas = document.getElementById('game-canvas');
+        const gCtx = gameCanvas.getContext('2d');
+        const gameContainer = document.getElementById('game-container');
+        
+        let gameRunning = false;
+        let gameWon = false;
+        let gameFrameId;
+        
+        // Game State
+        const GAME_GRAVITY = 0.6; // Renamed to avoid conflicts
+        const JUMP = -12;
+        let scroll = 0;
+        
+        const hero = { x: 50, y: 0, w: 30, h: 30, dy: 0, grounded: false };
+        const map = [
+            {x: 400, w: 40, h: 40, t: 'box'},
+            {x: 700, w: 30, h: 30, t: 'spike'},
+            {x: 1100, w: 40, h: 60, t: 'box'},
+            {x: 1400, w: 30, h: 30, t: 'spike'},
+            {x: 1440, w: 30, h: 30, t: 'spike'},
+            {x: 2000, w: 10, h: 200, t: 'flag'} // Finish
+        ];
+
+        function resizeGame() {
+            gameCanvas.width = window.innerWidth;
+            gameCanvas.height = window.innerHeight;
+            if(!gameRunning) hero.y = gameCanvas.height - 60 - hero.h;
+        }
+        window.addEventListener('resize', resizeGame);
+
+        function initGame() {
+            scroll = 0;
+            hero.y = gameCanvas.height - 60 - hero.h;
+            hero.dy = 0;
+            gameRunning = true;
+            resizeGame();
+            gameLoop();
+        }
+
+        function gameLoop() {
+            if (!gameRunning) return;
+
+            // Update
+            scroll += 5;
+            hero.dy += GAME_GRAVITY;
+            hero.y += hero.dy;
+            
+            // Floor
+            if (hero.y + hero.h > gameCanvas.height - 60) {
+                hero.y = gameCanvas.height - 60 - hero.h;
+                hero.dy = 0;
+                hero.grounded = true;
+            } else {
+                hero.grounded = false;
+            }
+
+            // Collisions
+            const screenGround = gameCanvas.height - 60;
+            map.forEach(obj => {
+                let ox = obj.x - scroll;
+                // Box/Spike logic simplified for brevity
+                if (hero.x < ox + obj.w && hero.x + hero.w > ox &&
+                    hero.y + hero.h > screenGround - obj.h) {
+                    if (obj.t === 'spike') {
+                         // Die: Reset
+                         scroll = 0;
+                         hero.y = screenGround - hero.h; // Reset pos slightly
+                    } else if (obj.t === 'box') {
+                         // Die: Reset
+                         scroll = 0;
+                    } else if (obj.t === 'flag') {
+                        gameRunning = false;
+                        unlockSite();
+                    }
+                }
+            });
+
+            // Draw
+            gCtx.fillStyle = '#5c94fc';
+            gCtx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
+            
+            // Floor
+            gCtx.fillStyle = '#5D4037';
+            gCtx.fillRect(0, gameCanvas.height - 60, gameCanvas.width, 60);
+            gCtx.fillStyle = '#4CAF50';
+            gCtx.fillRect(0, gameCanvas.height - 60, gameCanvas.width, 10);
+
+            // Objects
+            map.forEach(obj => {
+                let ox = obj.x - scroll;
+                if(ox > -100 && ox < gameCanvas.width) {
+                    if(obj.t === 'box') {
+                        gCtx.fillStyle = '#fbbf24'; gCtx.fillRect(ox, screenGround - obj.h, obj.w, obj.h);
+                        gCtx.strokeStyle = '#b45309'; gCtx.strokeRect(ox, screenGround - obj.h, obj.w, obj.h);
+                    } else if(obj.t === 'spike') {
+                        gCtx.fillStyle = '#9ca3af';
+                        gCtx.beginPath();
+                        gCtx.moveTo(ox, screenGround);
+                        gCtx.lineTo(ox + obj.w/2, screenGround - obj.h);
+                        gCtx.lineTo(ox + obj.w, screenGround);
+                        gCtx.fill();
+                    } else if(obj.t === 'flag') {
+                        gCtx.fillStyle = '#fff'; gCtx.fillRect(ox, screenGround - 200, 5, 200);
+                        gCtx.fillStyle = 'red'; gCtx.fillRect(ox+5, screenGround-200, 40, 30);
+                    }
+                }
+            });
+
+            // Player (Mario-ish)
+            const px = hero.x, py = hero.y;
+            gCtx.fillStyle = '#ef4444'; // Hat
+            gCtx.fillRect(px, py, 30, 10);
+            gCtx.fillStyle = '#2563eb'; // Overalls
+            gCtx.fillRect(px+5, py+10, 20, 20);
+            gCtx.fillStyle = '#ffccaa'; // Face
+            gCtx.fillRect(px+5, py+5, 20, 10);
+
+            gameFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        // Input
+        window.addEventListener('keydown', e => {
+            if((e.code === 'Space' || e.code === 'ArrowUp') && hero.grounded) {
+                hero.dy = JUMP; hero.grounded = false;
+            }
+        });
+        window.addEventListener('touchstart', () => {
+             if(hero.grounded) { hero.dy = JUMP; hero.grounded = false; }
+        });
+        window.addEventListener('mousedown', () => {
+             if(hero.grounded) { hero.dy = JUMP; hero.grounded = false; }
+        });
+
+        /* =========================================
+           PART 2: PARTICLE SYSTEM (THE REWARD)
+           ========================================= */
+        
+        function unlockSite() {
+            // Stop Game
+            gameRunning = false;
+            cancelAnimationFrame(gameFrameId);
+            
+            // Transition UI
+            document.body.classList.add('site-active');
+            
+            // Init Particles
             initParticles();
         }
 
+        // Attach listener here since unlockSite is now local
+        document.getElementById('skip-btn').addEventListener('click', unlockSite);
+
+        const pCanvas = document.getElementById('particle-canvas');
+        const pCtx = pCanvas.getContext('2d');
+        const gravityBtn = document.getElementById('gravity-btn');
+        
+        let particles = [];
+        let mouse = { x: null, y: null, radius: 150 };
+        let gravityEnabled = false;
+        let shockwave = 0;
+
+        // Toggle Gravity
+        gravityBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Don't trigger shockwave
+            gravityEnabled = !gravityEnabled;
+            gravityBtn.classList.toggle('active');
+            
+            // Pop effect
+            particles.forEach(p => {
+                p.vy = -Math.random() * 5; // Little jump
+            });
+        });
+
         class Particle {
             constructor(x, y) {
-                this.originX = x;
-                this.originY = y;
                 this.x = x;
                 this.y = y;
-                this.vx = (Math.random() - 0.5) * 2;
-                this.vy = (Math.random() - 0.5) * 2;
-                this.size = Math.random() * CONFIG.particleBaseSize + 1;
-                this.color = CONFIG.colors[Math.floor(Math.random() * CONFIG.colors.length)];
-                this.mass = this.size; 
-                this.angle = Math.random() * Math.PI * 2;
-            }
-
-            update() {
-                const dx = mouse.x - this.x;
-                const dy = mouse.y - this.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-
-                // Mouse Repulsion
-                if (distance < CONFIG.repulsionRadius) {
-                    const forceDirectionX = dx / distance;
-                    const forceDirectionY = dy / distance;
-                    const force = (CONFIG.repulsionRadius - distance) / CONFIG.repulsionRadius;
-                    const direction = -1; // Push away
-                    const power = force * CONFIG.repulsionForce * direction;
-                    
-                    this.vx += forceDirectionX * power;
-                    this.vy += forceDirectionY * power;
-                }
-
-                if (CONFIG.gravity) {
-                    this.vy += 0.5; // Gravity pull
-                    if (this.y + this.size > height) {
-                        this.y = height - this.size;
-                        this.vy *= -0.6; // Bounce
-                        this.vx *= 0.9; 
-                    }
-                    if (this.x + this.size > width || this.x - this.size < 0) {
-                        this.vx *= -1; // Wall bounce
-                    }
-                } else {
-                    // Return to original position
-                    const homeDx = this.originX - this.x;
-                    const homeDy = this.originY - this.y;
-                    this.vx += homeDx * CONFIG.returnSpeed * 0.5;
-                    this.vy += homeDy * CONFIG.returnSpeed * 0.5;
-                }
-
-                this.x += this.vx;
-                this.y += this.vy;
-                this.vx *= CONFIG.friction;
-                this.vy *= CONFIG.friction;
+                this.baseX = x;
+                this.baseY = y;
+                this.size = Math.random() * 3 + 1;
+                this.density = (Math.random() * 30) + 1;
+                this.vx = 0;
+                this.vy = 0;
+                this.color = Math.random() > 0.5 ? '#38bdf8' : '#818cf8'; // Tailwind sky-400 or indigo-400
             }
 
             draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = this.color;
-                ctx.fill();
+                pCtx.fillStyle = this.color;
+                pCtx.beginPath();
+                pCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                pCtx.closePath();
+                pCtx.fill();
+            }
+
+            update() {
+                if (gravityEnabled) {
+                    // === GRAVITY MODE ===
+                    this.vy += 0.5; // Gravity force
+                    this.y += this.vy;
+                    this.x += this.vx;
+
+                    // Floor bounce
+                    if (this.y + this.size > pCanvas.height) {
+                        this.y = pCanvas.height - this.size;
+                        this.vy *= -0.6; // Lose energy
+                        this.vx *= 0.9;  // Friction
+                    }
+                    // Walls
+                    if (this.x + this.size > pCanvas.width || this.x - this.size < 0) {
+                        this.vx *= -1;
+                    }
+                } else {
+                    // === CONSTELLATION MODE ===
+                    
+                    // Mouse Interaction (Flee)
+                    let dx = mouse.x - this.x;
+                    let dy = mouse.y - this.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Shockwave force calculation
+                    let forceDirectionX = dx / distance;
+                    let forceDirectionY = dy / distance;
+                    let maxDistance = mouse.radius + shockwave;
+                    let force = (maxDistance - distance) / maxDistance;
+                    
+                    let directionX = forceDirectionX * force * this.density;
+                    let directionY = forceDirectionY * force * this.density;
+
+                    if (distance < mouse.radius + shockwave) {
+                        this.x -= directionX;
+                        this.y -= directionY;
+                    } else {
+                        // Return to base position
+                        if (this.x !== this.baseX) {
+                            let dx = this.x - this.baseX;
+                            this.x -= dx / 20; // Ease back speed
+                        }
+                        if (this.y !== this.baseY) {
+                            let dy = this.y - this.baseY;
+                            this.y -= dy / 20;
+                        }
+                    }
+                }
             }
         }
 
         function initParticles() {
+            pCanvas.width = window.innerWidth;
+            pCanvas.height = window.innerHeight;
             particles = [];
-            for (let i = 0; i < CONFIG.particleCount; i++) {
-                let x = Math.random() * width;
-                let y = Math.random() * height;
+            
+            // Create a dense cloud in the center (where text is)
+            // and scattered particles elsewhere
+            const numberOfParticles = (pCanvas.width * pCanvas.height) / 8000;
+            
+            for (let i = 0; i < numberOfParticles; i++) {
+                let x = Math.random() * pCanvas.width;
+                let y = Math.random() * pCanvas.height;
                 particles.push(new Particle(x, y));
             }
+            
+            // Extra density over the text area
+            for(let i=0; i<100; i++) {
+                let x = (pCanvas.width/2 - 300) + Math.random() * 600;
+                let y = (pCanvas.height/2 - 100) + Math.random() * 200;
+                particles.push(new Particle(x, y));
+            }
+
+            animateParticles();
         }
 
-        function animate() {
-            ctx.clearRect(0,0, width, height);
-            
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
-            
-            // Draw lines between nearby particles
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-            ctx.lineWidth = 0.5;
+        function animateParticles() {
+            pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
             
             for (let i = 0; i < particles.length; i++) {
-                if (i % 2 !== 0) continue; // Optimization: skip every 2nd particle
-                const p1 = particles[i];
-                for (let j = i; j < particles.length; j++) {
-                    const p2 = particles[j];
-                    const dx = p1.x - p2.x;
-                    const dy = p1.y - p2.y;
-                    const dist = Math.sqrt(dx*dx + dy*dy);
-                    if (dist < CONFIG.connectionDistance) {
-                        ctx.beginPath();
-                        ctx.moveTo(p1.x, p1.y);
-                        ctx.lineTo(p2.x, p2.y);
-                        ctx.stroke();
+                particles[i].draw();
+                particles[i].update();
+            }
+            
+            // Draw Constellation Lines (Only if not in gravity mode and close enough)
+            if (!gravityEnabled) {
+                connectParticles();
+            }
+
+            // Decay shockwave
+            if(shockwave > 0) shockwave -= 5;
+
+            requestAnimationFrame(animateParticles);
+        }
+
+        function connectParticles() {
+            let opacityValue = 1;
+            for (let a = 0; a < particles.length; a++) {
+                for (let b = a; b < particles.length; b++) {
+                    let dx = particles[a].x - particles[b].x;
+                    let dy = particles[a].y - particles[b].y;
+                    let distance = dx * dx + dy * dy;
+
+                    if (distance < 3600) { // Max distance squared (60px)
+                        opacityValue = 1 - (distance / 3600);
+                        pCtx.strokeStyle = 'rgba(148, 163, 184,' + opacityValue + ')'; // Slate-400
+                        pCtx.lineWidth = 1;
+                        pCtx.beginPath();
+                        pCtx.moveTo(particles[a].x, particles[a].y);
+                        pCtx.lineTo(particles[b].x, particles[b].y);
+                        pCtx.stroke();
                     }
                 }
             }
-            requestAnimationFrame(animate);
         }
 
-        // Event Listeners
-        window.addEventListener('resize', resize);
-        
+        // Mouse Listeners for Portfolio
         window.addEventListener('mousemove', (e) => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
+            mouse.x = e.x;
+            mouse.y = e.y;
         });
 
+        // Touch for Mobile
         window.addEventListener('touchmove', (e) => {
-            const touch = e.touches[0];
-            mouse.x = touch.clientX;
-            mouse.y = touch.clientY;
-        }, { passive: true });
-
-        window.addEventListener('mouseleave', () => {
-            mouse.x = -1000;
-            mouse.y = -1000;
+            mouse.x = e.touches[0].clientX;
+            mouse.y = e.touches[0].clientY;
         });
 
-        function explode(x, y) {
-            particles.forEach(p => {
-                const dx = p.x - x;
-                const dy = p.y - y;
-                const dist = Math.sqrt(dx*dx + dy*dy);
-                if (dist < 300) { 
-                    const force = (300 - dist) / 300;
-                    const angle = Math.atan2(dy, dx);
-                    const power = force * 30; 
-                    p.vx += Math.cos(angle) * power;
-                    p.vy += Math.sin(angle) * power;
-                }
-            });
-        }
-
-        window.addEventListener('mousedown', (e) => {
-            if(e.target.closest('button') || e.target.closest('a')) return;
-            explode(e.clientX, e.clientY);
-        });
-
-        window.addEventListener('touchstart', (e) => {
-             if(e.target.closest('button') || e.target.closest('a')) return;
-            const touch = e.touches[0];
-            mouse.x = touch.clientX;
-            mouse.y = touch.clientY;
-            explode(mouse.x, mouse.y);
-        }, { passive: true });
-
-
-        // Game UI Controls
-        const gravityBtn = document.getElementById('gravityBtn');
-        const resetBtn = document.getElementById('resetBtn');
-
-        gravityBtn.addEventListener('click', () => {
-            CONFIG.gravity = !CONFIG.gravity;
-            if (CONFIG.gravity) {
-                gravityBtn.classList.add('bg-cyan-500', 'text-white');
-                gravityBtn.classList.remove('bg-cyan-600/20', 'text-cyan-400');
-                particles.forEach(p => p.vy += 2);
-            } else {
-                gravityBtn.classList.remove('bg-cyan-500', 'text-white');
-                gravityBtn.classList.add('bg-cyan-600/20', 'text-cyan-400');
+        // Shockwave Click
+        window.addEventListener('click', (e) => {
+            // Only if not clicking a link or button
+            if (e.target.tagName !== 'A' && e.target.tagName !== 'BUTTON' && !e.target.closest('a') && !e.target.closest('button')) {
+                shockwave = 200; // Trigger explosion
+                setTimeout(() => shockwave = 0, 500);
             }
         });
-
-        resetBtn.addEventListener('click', () => {
-            explode(width/2, height/2);
-            setTimeout(() => {
-                initParticles();
-            }, 300);
+        
+        window.addEventListener('resize', () => {
+            pCanvas.width = window.innerWidth;
+            pCanvas.height = window.innerHeight;
+            // Re-init on severe resize? keeping it simple for now
         });
 
-        // Start
-        resize();
-        animate();
+        // Start Game
+        initGame();
 
+    })(); // End IIFE
     </script>
 </body>
 </html>
