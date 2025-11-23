@@ -3,9 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Creative Interactive Portfolio</title>
+    <title>Naxxtra | Operations Specialist</title>
+    
+    <!-- Tailwind CSS (Styling) -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome (Icons) -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
@@ -13,27 +19,28 @@
     <style>
         body {
             font-family: 'Space Grotesk', sans-serif;
-            overflow: hidden; /* Prevent scrolling, everything is in the view */
-            background-color: #0f172a; /* Slate 900 */
+            overflow: hidden; /* Prevents scrolling bars */
+            background-color: #0f172a; /* Dark Blue Background */
         }
         
+        /* Canvas sits on top of everything to catch mouse movements */
         #canvas-container {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 20; /* On top of content */
-            touch-action: none; /* Prevent scrolling on mobile while touching canvas */
+            z-index: 20;
+            touch-action: none;
         }
 
         .content-layer {
             position: relative;
-            z-index: 10; /* Below canvas */
-            pointer-events: none; /* Allow clicks to pass through to canvas logic usually, but we handle interaction via canvas events */
+            z-index: 10;
+            pointer-events: none; /* Let clicks pass through to canvas */
         }
 
-        /* Allow clicking buttons even if canvas is on top */
+        /* Re-enable clicking for buttons */
         .interactive-ui {
             pointer-events: auto; 
             z-index: 30;
@@ -56,10 +63,7 @@
         }
 
         @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes glitch {
@@ -110,51 +114,43 @@
                     
                     <div class="grid grid-cols-4 gap-3 md:gap-4 mt-2">
                         <!-- Website -->
-                        <a href="https://www.nakshatrapardeshi.com" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-cyan-400 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(34,211,238,0.4)]">
+                        <a href="https://www.nakshatrapardeshi.com" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-cyan-400 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(34,211,238,0.4)]" title="Website">
                             <i class="fas fa-globe text-xl md:text-2xl text-slate-400 group-hover:text-cyan-400 transition-colors"></i>
-                            <span class="absolute -bottom-8 bg-black text-xs text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">Website</span>
                         </a>
 
                         <!-- Mail -->
-                        <a href="mailto:nakshatrapardeshi@gmail.com" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-emerald-400 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(52,211,153,0.4)]">
+                        <a href="mailto:nakshatrapardeshi@gmail.com" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-emerald-400 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(52,211,153,0.4)]" title="Email Me">
                             <i class="fas fa-envelope text-xl md:text-2xl text-slate-400 group-hover:text-emerald-400 transition-colors"></i>
-                            <span class="absolute -bottom-8 bg-black text-xs text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">Email</span>
                         </a>
 
                         <!-- LinkedIn -->
-                        <a href="https://uk.linkedin.com/in/nakshatrapardeshi" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-blue-400 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(96,165,250,0.4)]">
+                        <a href="https://uk.linkedin.com/in/nakshatrapardeshi" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-blue-400 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(96,165,250,0.4)]" title="LinkedIn">
                             <i class="fab fa-linkedin text-xl md:text-2xl text-slate-400 group-hover:text-blue-400 transition-colors"></i>
-                            <span class="absolute -bottom-8 bg-black text-xs text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">LinkedIn</span>
                         </a>
 
                         <!-- Instagram -->
-                        <a href="https://www.instagram.com/nakshatrapardeshi" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-pink-500 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(236,72,153,0.4)]">
+                        <a href="https://www.instagram.com/nakshatrapardeshi" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-pink-500 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(236,72,153,0.4)]" title="Instagram">
                             <i class="fab fa-instagram text-xl md:text-2xl text-slate-400 group-hover:text-pink-500 transition-colors"></i>
-                            <span class="absolute -bottom-8 bg-black text-xs text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">Instagram</span>
                         </a>
                         
-                        <!-- Meta AI (Robot Icon) -->
-                        <a href="https://meta.ai/@nakshatrapardeshi" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-blue-600 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(37,99,235,0.4)]">
+                        <!-- Meta AI -->
+                        <a href="https://meta.ai/@nakshatrapardeshi" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-blue-600 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(37,99,235,0.4)]" title="Meta AI">
                             <i class="fas fa-robot text-xl md:text-2xl text-slate-400 group-hover:text-blue-600 transition-colors"></i>
-                            <span class="absolute -bottom-8 bg-black text-xs text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">Meta AI</span>
                         </a>
 
-                        <!-- Threads (At Icon) -->
-                        <a href="https://www.threads.com/@nakshatrapardeshi" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-white hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(255,255,255,0.4)]">
+                        <!-- Threads -->
+                        <a href="https://www.threads.com/@nakshatrapardeshi" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-white hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(255,255,255,0.4)]" title="Threads">
                             <i class="fas fa-at text-xl md:text-2xl text-slate-400 group-hover:text-white transition-colors"></i>
-                            <span class="absolute -bottom-8 bg-black text-xs text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">Threads</span>
                         </a>
 
                         <!-- YouTube -->
-                        <a href="https://www.youtube.com/@nakshatrapardeshi" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-red-500 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(239,68,68,0.4)]">
+                        <a href="https://www.youtube.com/@nakshatrapardeshi" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-red-500 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(239,68,68,0.4)]" title="YouTube">
                             <i class="fab fa-youtube text-xl md:text-2xl text-slate-400 group-hover:text-red-500 transition-colors"></i>
-                            <span class="absolute -bottom-8 bg-black text-xs text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">YouTube</span>
                         </a>
 
                         <!-- Medium -->
-                        <a href="https://medium.com/@nakshatrapardeshi" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-yellow-400 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(250,204,21,0.4)]">
+                        <a href="https://medium.com/@nakshatrapardeshi" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-yellow-400 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(250,204,21,0.4)]" title="Medium">
                             <i class="fab fa-medium text-xl md:text-2xl text-slate-400 group-hover:text-yellow-400 transition-colors"></i>
-                            <span class="absolute -bottom-8 bg-black text-xs text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">Medium</span>
                         </a>
                     </div>
                 </div>
@@ -169,29 +165,32 @@
 
     <!-- GAME CONTROLS (Top Right) -->
     <div class="absolute top-6 right-6 interactive-ui flex gap-3">
-        <div class="bg-slate-800/80 backdrop-blur border border-slate-700 p-2 rounded-lg text-xs text-slate-400 shadow-xl hidden md:block">
-            <p>Left Click: <span class="text-cyan-400">Explode</span></p>
-            <p>Move: <span class="text-purple-400">Push</span></p>
-        </div>
         
         <!-- GEMINI AI BUTTON -->
-        <button id="multiverseBtn" class="bg-purple-600/20 border border-purple-500/50 text-purple-400 p-3 rounded-lg hover:bg-purple-500 hover:text-white transition-all hover:scale-110 shadow-[0_0_15px_rgba(168,85,247,0.3)]" title="✨ Switch Multiverse Identity (Powered by Gemini)">
+        <button id="multiverseBtn" class="bg-purple-600/20 border border-purple-500/50 text-purple-400 p-3 rounded-lg hover:bg-purple-500 hover:text-white transition-all hover:scale-110 shadow-[0_0_15px_rgba(168,85,247,0.3)]" title="✨ Switch Identity (AI)">
             <i class="fas fa-sparkles"></i>
         </button>
 
         <button id="gravityBtn" class="bg-cyan-600/20 border border-cyan-500/50 text-cyan-400 p-3 rounded-lg hover:bg-cyan-500 hover:text-white transition-colors" title="Toggle Gravity">
             <i class="fas fa-magnet"></i>
         </button>
-        <button id="resetBtn" class="bg-slate-700/50 border border-slate-600 text-slate-300 p-3 rounded-lg hover:bg-slate-600 transition-colors" title="Reset Particles & Identity">
+        <button id="resetBtn" class="bg-slate-700/50 border border-slate-600 text-slate-300 p-3 rounded-lg hover:bg-slate-600 transition-colors" title="Reset Particles">
             <i class="fas fa-redo"></i>
         </button>
     </div>
 
     <script>
+        // --------------------------------------------------------
+        // CONFIGURATION SECTION
+        // --------------------------------------------------------
+
+        const apiKey = "AIzaSyAhWeZAC-vUSJ9iwQt_936czalda4ijuWo"; 
+        
+        // --------------------------------------------------------
+
         /**
-         * GEMINI API INTEGRATION: MULTIVERSE SWITCHER
+         * GEMINI API INTEGRATION
          */
-        const apiKey = ""; // Injected by environment
         const multiverseBtn = document.getElementById('multiverseBtn');
         const badgeEl = document.getElementById('identityBadge');
         const titleEl = document.getElementById('mainTitle');
@@ -204,8 +203,9 @@
         };
 
         multiverseBtn.addEventListener('click', async () => {
-            if (!apiKey) {
-                alert("API Key missing (Environment issue).");
+            // Safety check for API Key
+            if (apiKey === "AIzaSyAhWeZAC-vUSJ9iwQt_936czalda4ijuWo" || apiKey === "") {
+                alert("Please add your Gemini API Key in the code (line 155) to use the AI feature!");
                 return;
             }
 
@@ -215,11 +215,12 @@
             subtitleEl.innerText = "Scanning multiverse frequencies...";
             badgeEl.innerText = "Quantum Jumping...";
 
-            // Trigger a particle explosion for effect
+            // Trigger a particle explosion
             explode(width/2, height/2);
 
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                // Using Gemini 1.5 Flash (Fast & Efficient)
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -252,10 +253,6 @@
 
                 // Apply the new reality
                 badgeEl.innerText = `Theme: ${result.theme}`;
-                
-                // For the title, we want to preserve the gradient span if possible, or just inject the HTML
-                // We trust the model to return a string, we wrap the name part in span manually if needed, 
-                // but let's just use the innerHTML returned for maximum flexibility.
                 titleEl.innerHTML = result.title; 
                 subtitleEl.innerHTML = result.subtitle;
 
@@ -274,7 +271,6 @@
             titleEl.innerHTML = originalState.title;
             subtitleEl.innerHTML = originalState.subtitle;
         }
-
 
         /**
          * INTERACTIVE PARTICLE SYSTEM
@@ -304,6 +300,7 @@
             width = canvas.width = window.innerWidth;
             height = canvas.height = window.innerHeight;
             const area = width * height;
+            // Balance performance vs visual density
             CONFIG.particleCount = Math.min(Math.floor(area / 2500), 800); 
             initParticles();
         }
@@ -327,11 +324,12 @@
                 const dy = mouse.y - this.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
 
+                // Mouse Repulsion
                 if (distance < CONFIG.repulsionRadius) {
                     const forceDirectionX = dx / distance;
                     const forceDirectionY = dy / distance;
                     const force = (CONFIG.repulsionRadius - distance) / CONFIG.repulsionRadius;
-                    const direction = -1; 
+                    const direction = -1; // Push away
                     const power = force * CONFIG.repulsionForce * direction;
                     
                     this.vx += forceDirectionX * power;
@@ -339,16 +337,17 @@
                 }
 
                 if (CONFIG.gravity) {
-                    this.vy += 0.5; 
+                    this.vy += 0.5; // Gravity pull
                     if (this.y + this.size > height) {
                         this.y = height - this.size;
-                        this.vy *= -0.6; 
+                        this.vy *= -0.6; // Bounce
                         this.vx *= 0.9; 
                     }
                     if (this.x + this.size > width || this.x - this.size < 0) {
-                        this.vx *= -1;
+                        this.vx *= -1; // Wall bounce
                     }
                 } else {
+                    // Return to original position
                     const homeDx = this.originX - this.x;
                     const homeDy = this.originY - this.y;
                     this.vx += homeDx * CONFIG.returnSpeed * 0.5;
@@ -366,8 +365,6 @@
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fillStyle = this.color;
                 ctx.fill();
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = this.color;
             }
         }
 
@@ -388,12 +385,12 @@
                 p.draw();
             });
             
+            // Draw lines between nearby particles
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
             ctx.lineWidth = 0.5;
-            ctx.shadowBlur = 0; 
             
             for (let i = 0; i < particles.length; i++) {
-                if (i % 2 !== 0) continue; 
+                if (i % 2 !== 0) continue; // Optimization: skip every 2nd particle
                 const p1 = particles[i];
                 for (let j = i; j < particles.length; j++) {
                     const p2 = particles[j];
@@ -446,12 +443,12 @@
         }
 
         window.addEventListener('mousedown', (e) => {
-            if(e.target.closest('button')) return;
+            if(e.target.closest('button') || e.target.closest('a')) return;
             explode(e.clientX, e.clientY);
         });
 
         window.addEventListener('touchstart', (e) => {
-             if(e.target.closest('button')) return;
+             if(e.target.closest('button') || e.target.closest('a')) return;
             const touch = e.touches[0];
             mouse.x = touch.clientX;
             mouse.y = touch.clientY;
@@ -477,13 +474,13 @@
 
         resetBtn.addEventListener('click', () => {
             explode(width/2, height/2);
-            restoreIdentity(); // Also restore text
+            restoreIdentity();
             setTimeout(() => {
                 initParticles();
             }, 300);
         });
 
-        // Initialization
+        // Start
         resize();
         animate();
 
