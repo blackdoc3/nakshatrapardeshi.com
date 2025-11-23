@@ -1,286 +1,492 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nakshatra Pardeshi | Personal Portfolio</title>
+    <title>Creative Interactive Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-            },
-            colors: {
-              primary: '#0a192f',
-              secondary: '#ccd6f6',
-              lightest: '#8892b0',
-              accent: '#14B8A6',
-            },
-          },
-        },
-      }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    
     <style>
-      /* Custom Scrollbar */
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #0a192f;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #14B8A6;
-        border-radius: 10px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #11a394;
-      }
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            overflow: hidden; /* Prevent scrolling, everything is in the view */
+            background-color: #0f172a; /* Slate 900 */
+        }
+        
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 20; /* On top of content */
+            touch-action: none; /* Prevent scrolling on mobile while touching canvas */
+        }
 
-      /* Page fade-in */
-      @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-      }
-      #content-wrapper {
-        opacity: 0;
-        animation: fadeIn 1.5s ease-out 0.2s forwards;
-      }
+        .content-layer {
+            position: relative;
+            z-index: 10; /* Below canvas */
+            pointer-events: none; /* Allow clicks to pass through to canvas logic usually, but we handle interaction via canvas events */
+        }
 
-      /* Reveal on scroll */
-      .reveal {
-        opacity: 0;
-        transform: translateY(30px);
-        transition: opacity 0.8s cubic-bezier(0.17, 0.55, 0.55, 1), transform 0.8s cubic-bezier(0.17, 0.55, 0.55, 1);
-      }
-      .reveal.visible {
-        opacity: 1;
-        transform: translateY(0);
-      }
+        /* Allow clicking buttons even if canvas is on top */
+        .interactive-ui {
+            pointer-events: auto; 
+            z-index: 30;
+        }
 
-      /* Tab fade-in */
-      @keyframes tab-fade-in {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-      .tab-fade-in { animation: tab-fade-in 0.5s ease-out forwards; }
-      .tab-button.active {
-        color: #14B8A6;
-        border-color: #14B8A6;
-        background-color: rgba(20, 184, 166, 0.1);
-      }
+        .glowing-text {
+            text-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+            transition: all 0.5s ease;
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 1s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .glitch-anim {
+            animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+            color: #22d3ee;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0) }
+            20% { transform: translate(-2px, 2px) }
+            40% { transform: translate(-2px, -2px) }
+            60% { transform: translate(2px, 2px) }
+            80% { transform: translate(2px, -2px) }
+            100% { transform: translate(0) }
+        }
     </style>
 </head>
-<body class="bg-primary text-secondary font-sans overflow-x-hidden">
-    <canvas id="particle-canvas" class="fixed top-0 left-0 w-full h-full z-0"></canvas>
-    <div id="content-wrapper" class="relative z-10">
-        <main class="max-w-4xl mx-auto px-6 py-12 md:py-24">
-            <section id="hero" class="min-h-screen flex flex-col justify-center">
-                <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4">
-                    Nakshatra Pardeshi
-                </h1>
-                <h2 class="text-2xl sm:text-3xl md:text-4xl font-medium text-accent mb-8">
-                    Digital Creator &amp; Tech Enthusiast
-                </h2>
-                <a href="#contact" class="inline-block px-8 py-3 text-lg font-medium text-accent border-2 border-accent rounded-lg transition-all duration-300 hover:bg-accent/10 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent/20 w-fit">
-                    Get in Touch
-                </a>
-            </section>
-            <section id="about" class="my-24 md:my-32 reveal">
-                <h3 class="text-3xl font-bold text-white mb-6 flex items-center">
-                    <span class="text-accent text-2xl font-mono mr-3">01.</span> About Me
-                </h3>
-                <div class="space-y-5 text-lg text-lightest max-w-3xl">
-                    <p>
-                        I'm a digital creator and tech enthusiast passionate about building beautiful, functional, and user-centric digital experiences. My work lives at the intersection of creative design and cutting-edge technology.
-                    </p>
-                    <p>
-                        I'm driven by Arthur C. Clarke's idea that any "sufficiently advanced technology is indistinguishable from magic." My work is a pursuit of that magic—turning complex code and abstract logic into fluid, intuitive, and almost-living digital experiences that feel effortless for the end-user.
-                    </p>
-                </div>
-            </section>
-            <section id="what-i-do" class="my-24 md:my-32 reveal">
-                <h3 class="text-3xl font-bold text-white mb-8 flex items-center">
-                    <span class="text-accent text-2xl font-mono mr-3">02.</span> What I Do
-                </h3>
-                <div class="flex flex-col md:flex-row gap-6 md:gap-10">
-                    <div class="flex md:flex-col overflow-x-auto -mx-6 px-6 md:mx-0 md:px-0 md:border-l-2 md:border-gray-700/50">
-                        <button class="tab-button active text-left whitespace-nowrap px-4 py-3 md:pl-6 border-b-2 md:border-b-0 md:border-l-2 -mb-px md:-ml-px text-lightest font-mono transition-all duration-300" data-tab-target="tab-design">
-                            UI/UX Design
-                        </button>
-                        <button class="tab-button text-left whitespace-nowrap px-4 py-3 md:pl-6 border-b-2 md:border-b-0 md:border-l-2 -mb-px md:-ml-px border-transparent text-lightest font-mono transition-all duration-300" data-tab-target="tab-dev">
-                            Development
-                        </button>
-                        <button class="tab-button text-left whitespace-nowrap px-4 py-3 md:pl-6 border-b-2 md:border-b-0 md:border-l-2 -mb-px md:-ml-px border-transparent text-lightest font-mono transition-all duration-300" data-tab-target="tab-creator">
-                            Digital Strategy
-                        </button>
+<body class="text-white h-screen w-screen relative">
+
+    <!-- CANVAS OVERLAY -->
+    <canvas id="heroCanvas"></canvas>
+
+    <!-- CONTENT UNDERLAY -->
+    <main class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center content-layer">
+        
+        <div class="space-y-6 max-w-4xl mx-auto flex flex-col items-center">
+            <!-- Badge -->
+            <div class="fade-in-up" style="animation-delay: 0.2s;">
+                <span id="identityBadge" class="px-4 py-2 rounded-full border border-cyan-500/30 bg-cyan-900/20 text-cyan-300 text-sm tracking-widest uppercase font-bold backdrop-blur-sm transition-all duration-500">
+                    Interactive Portfolio
+                </span>
+            </div>
+
+            <!-- Main Title -->
+            <h1 id="mainTitle" class="text-6xl md:text-8xl font-bold leading-tight tracking-tight glowing-text fade-in-up mix-blend-screen" style="animation-delay: 0.4s;">
+                HELLO, I'M <br />
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">NAXXTRA</span>
+            </h1>
+
+            <!-- Subtitle -->
+            <p id="subTitle" class="text-lg md:text-2xl text-slate-400 max-w-2xl mx-auto fade-in-up transition-all duration-500" style="animation-delay: 0.6s;">
+                Operations Specialist. <br class="hidden md:block" />
+                Push the particles away to connect.
+            </p>
+
+            <!-- SOCIAL MEDIA INVENTORY GRID -->
+            <div class="mt-8 fade-in-up interactive-ui" style="animation-delay: 0.8s;">
+                <div class="bg-slate-900/80 backdrop-blur-md border border-slate-700 p-4 rounded-xl shadow-2xl relative">
+                    <!-- Inventory Label -->
+                    <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-slate-800 border border-slate-600 px-3 py-1 rounded text-xs text-cyan-400 font-mono tracking-widest uppercase">
+                        Connection Nodes
                     </div>
-                    <div class="relative w-full min-h-[250px]">
-                        <div id="tab-design" class="tab-panel active absolute top-0 left-0 text-lightest space-y-4 tab-fade-in">
-                            <h4 class="text-xl font-bold text-secondary">Crafting User-Centric Experiences</h4>
-                            <p>I design intuitive and beautiful user interfaces that solve real problems. My focus is on creating a seamless flow from the first click to the final conversion, ensuring every interaction feels natural and engaging.</p>
-                            <ul class="list-disc list-inside space-y-2 text-accent">
-                                <li><span class="text-lightest">Wireframing &amp; Prototyping</span></li>
-                                <li><span class="text-lightest">Responsive Web Design</span></li>
-                                <li><span class="text-lightest">Interaction &amp; Motion Design</span></li>
-                            </ul>
-                        </div>
-                        <div id="tab-dev" class="tab-panel hidden absolute top-0 left-0 text-lightest space-y-4">
-                            <h4 class="text-xl font-bold text-secondary">Bringing Ideas to Life with Code</h4>
-                            <p>I build clean, efficient, and scalable web applications. From a static landing page (like this one!) to a complex data-driven platform, I love turning a design concept into a high-performance reality.</p>
-                            <ul class="list-disc list-inside space-y-2 text-accent">
-                                <li><span class="text-lightest">React &amp; Next.js</span></li>
-                                <li><span class="text-lightest">Node.js &amp; Serverless</span></li>
-                                <li><span class="text-lightest">Modern CSS (Tailwind, Framer Motion)</span></li>
-                            </ul>
-                        </div>
-                        <div id="tab-creator" class="tab-panel hidden absolute top-0 left-0 text-lightest space-y-4">
-                            <h4 class="text-xl font-bold text-secondary">Connecting Content with Technology</h4>
-                            <p>Being a "Digital Creator" is more than just content; it's about strategy. I explore how new technologies like AI and new platforms can be leveraged to build communities and tell compelling stories.</p>
-                            <ul class="list-disc list-inside space-y-2 text-accent">
-                                <li><span class="text-lightest">Content Creation &amp; Virality</span></li>
-                                <li><span class="text-lightest">AI &amp; Automation Workflows</span></li>
-                                <li><span class="text-lightest">Community Building</span></li>
-                            </ul>
-                        </div>
+                    
+                    <div class="grid grid-cols-4 gap-3 md:gap-4 mt-2">
+                        <!-- Website -->
+                        <a href="https://www.nakshatrapardeshi.com" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-cyan-400 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(34,211,238,0.4)]">
+                            <i class="fas fa-globe text-xl md:text-2xl text-slate-400 group-hover:text-cyan-400 transition-colors"></i>
+                            <span class="absolute -bottom-8 bg-black text-xs text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">Website</span>
+                        </a>
+
+                        <!-- Mail -->
+                        <a href="mailto:nakshatrapardeshi@gmail.com" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-emerald-400 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(52,211,153,0.4)]">
+                            <i class="fas fa-envelope text-xl md:text-2xl text-slate-400 group-hover:text-emerald-400 transition-colors"></i>
+                            <span class="absolute -bottom-8 bg-black text-xs text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">Email</span>
+                        </a>
+
+                        <!-- LinkedIn -->
+                        <a href="https://uk.linkedin.com/in/nakshatrapardeshi" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-blue-400 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(96,165,250,0.4)]">
+                            <i class="fab fa-linkedin text-xl md:text-2xl text-slate-400 group-hover:text-blue-400 transition-colors"></i>
+                            <span class="absolute -bottom-8 bg-black text-xs text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">LinkedIn</span>
+                        </a>
+
+                        <!-- Instagram -->
+                        <a href="https://www.instagram.com/nakshatrapardeshi" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-pink-500 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(236,72,153,0.4)]">
+                            <i class="fab fa-instagram text-xl md:text-2xl text-slate-400 group-hover:text-pink-500 transition-colors"></i>
+                            <span class="absolute -bottom-8 bg-black text-xs text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">Instagram</span>
+                        </a>
+                        
+                        <!-- Meta AI (Robot Icon) -->
+                        <a href="https://meta.ai/@nakshatrapardeshi" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-blue-600 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(37,99,235,0.4)]">
+                            <i class="fas fa-robot text-xl md:text-2xl text-slate-400 group-hover:text-blue-600 transition-colors"></i>
+                            <span class="absolute -bottom-8 bg-black text-xs text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">Meta AI</span>
+                        </a>
+
+                        <!-- Threads (At Icon) -->
+                        <a href="https://www.threads.com/@nakshatrapardeshi" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-white hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(255,255,255,0.4)]">
+                            <i class="fas fa-at text-xl md:text-2xl text-slate-400 group-hover:text-white transition-colors"></i>
+                            <span class="absolute -bottom-8 bg-black text-xs text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">Threads</span>
+                        </a>
+
+                        <!-- YouTube -->
+                        <a href="https://www.youtube.com/@nakshatrapardeshi" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-red-500 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(239,68,68,0.4)]">
+                            <i class="fab fa-youtube text-xl md:text-2xl text-slate-400 group-hover:text-red-500 transition-colors"></i>
+                            <span class="absolute -bottom-8 bg-black text-xs text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">YouTube</span>
+                        </a>
+
+                        <!-- Medium -->
+                        <a href="https://medium.com/@nakshatrapardeshi" target="_blank" class="group relative w-12 h-12 md:w-14 md:h-14 bg-slate-800 rounded border border-slate-600 flex items-center justify-center hover:border-yellow-400 hover:bg-slate-700 transition-all hover:scale-110 hover:shadow-[0_0_15px_rgba(250,204,21,0.4)]">
+                            <i class="fab fa-medium text-xl md:text-2xl text-slate-400 group-hover:text-yellow-400 transition-colors"></i>
+                            <span class="absolute -bottom-8 bg-black text-xs text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none">Medium</span>
+                        </a>
                     </div>
                 </div>
-            </section>
-            <section id="contact" class="my-24 md:my-32 reveal">
-                <h3 class="text-3xl font-bold text-white mb-8 flex items-center">
-                    <span class="text-accent text-2xl font-mono mr-3">03.</span> Contact &amp; Links
-                </h3>
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
-                    <a href="mailto:nakshatrapardeshi@gmail.com" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
-                        <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                        <span class="font-medium text-sm">Email</span>
-                    </a>
-                    <a href="https://www.nakshatrapardeshi.com" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
-                        <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
-                        <span class="font-medium text-sm">Website</span>
-                    </a>
-                    <a href="https://www.instagram.com/nakshatrapardeshi/" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
-                        <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                        <span class="font-medium text-sm">Instagram</span>
-                    </a>
-                    <a href="https://meta.ai/@nakshatrapardeshi/" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
-                        <svg class="w-8 h-8 mb-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.04C6.5 2.04 2 6.53 2 12.06c0 5.52 4.5 10.02 10 10.02 5.52 0 10-4.5 10-10.02C22 6.53 17.52 2.04 12 2.04zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/><path d="M12 6.5c-3.03 0-5.5 2.47-5.5 5.5s2.47 5.5 5.5 5.5 5.5-2.47 5.5-5.5-2.47-5.5-5.5-5.5zm0 9c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
-                        <span class="font-medium text-sm">Meta AI</span>
-                    </a>
-                    <a href="https://uk.linkedin.com/in/nakshatrapardeshi" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
-                        <svg class="w-8 h-8 mb-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-                        <span class="font-medium text-sm">LinkedIn</span>
-                    </a>
-                    <a href="https://www.threads.com/@nakshatrapardeshi" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
-                        <svg class="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.206" /></svg>
-                        <span class="font-medium text-sm">Threads</span>
-                    </a>
-                    <a href="https://medium.com/@nakshatrapardeshi" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
-                        <svg class="w-8 h-8 mb-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13.54 12c0 2.1-1.6 3.82-3.54 3.82-1.93 0-3.52-1.72-3.52-3.82s1.59-3.8 3.52-3.8c1.94 0 3.54 1.7 3.54 3.8zm6.53 0c0 4.2-3.03 7.6-6.75 7.6-3.73 0-6.76-3.4-6.76-7.6s3.03-7.6 6.76-7.6c3.72 0 6.75 3.4 6.75 7.6zM24 12c0 5.16-3.9 9.32-8.72 9.32C10.42 21.32 6.5 17.16 6.5 12S10.42 2.68 15.28 2.68C20.1 2.68 24 6.84 24 12z"/></svg>
-                        <span class="font-medium text-sm">Medium</span>
-                    </a>
-                    <a href="https://www.youtube.com/@nakshatrapardeshi" target="_blank" class="group flex flex-col items-center justify-center p-4 bg-blue-900/20 border border-gray-700/50 rounded-lg text-lightest transition-all duration-300 hover:text-accent hover:scale-105 hover:border-accent/50 hover:shadow-lg hover:shadow-accent/10">
-                        <svg class="w-8 h-8 mb-2" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                        <span class="font-medium text-sm">YouTube</span>
-                    </a>
-                </div>
-            </section>
-        </main>
-        <footer class="text-center py-8 text-lightest text-sm">
-            <div>Designed &amp; Built by Nakshatra Pardeshi</div>
-        </footer>
+            </div>
+        </div>
+
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-10 animate-bounce fade-in-up text-slate-500" style="animation-delay: 1.2s;">
+            <i class="fas fa-chevron-down text-2xl"></i>
+        </div>
+    </main>
+
+    <!-- GAME CONTROLS (Top Right) -->
+    <div class="absolute top-6 right-6 interactive-ui flex gap-3">
+        <div class="bg-slate-800/80 backdrop-blur border border-slate-700 p-2 rounded-lg text-xs text-slate-400 shadow-xl hidden md:block">
+            <p>Left Click: <span class="text-cyan-400">Explode</span></p>
+            <p>Move: <span class="text-purple-400">Push</span></p>
+        </div>
+        
+        <!-- GEMINI AI BUTTON -->
+        <button id="multiverseBtn" class="bg-purple-600/20 border border-purple-500/50 text-purple-400 p-3 rounded-lg hover:bg-purple-500 hover:text-white transition-all hover:scale-110 shadow-[0_0_15px_rgba(168,85,247,0.3)]" title="✨ Switch Multiverse Identity (Powered by Gemini)">
+            <i class="fas fa-sparkles"></i>
+        </button>
+
+        <button id="gravityBtn" class="bg-cyan-600/20 border border-cyan-500/50 text-cyan-400 p-3 rounded-lg hover:bg-cyan-500 hover:text-white transition-colors" title="Toggle Gravity">
+            <i class="fas fa-magnet"></i>
+        </button>
+        <button id="resetBtn" class="bg-slate-700/50 border border-slate-600 text-slate-300 p-3 rounded-lg hover:bg-slate-600 transition-colors" title="Reset Particles & Identity">
+            <i class="fas fa-redo"></i>
+        </button>
     </div>
+
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Particle background
-            const canvas = document.getElementById('particle-canvas');
-            const ctx = canvas.getContext('2d');
-            let particles = [];
-            function resizeCanvas() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
+        /**
+         * GEMINI API INTEGRATION: MULTIVERSE SWITCHER
+         */
+        const apiKey = ""; // Injected by environment
+        const multiverseBtn = document.getElementById('multiverseBtn');
+        const badgeEl = document.getElementById('identityBadge');
+        const titleEl = document.getElementById('mainTitle');
+        const subtitleEl = document.getElementById('subTitle');
+
+        const originalState = {
+            badge: "Interactive Portfolio",
+            title: `HELLO, I'M <br /><span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">NAXXTRA</span>`,
+            subtitle: `Operations Specialist. <br class="hidden md:block" />Push the particles away to connect.`
+        };
+
+        multiverseBtn.addEventListener('click', async () => {
+            if (!apiKey) {
+                alert("API Key missing (Environment issue).");
+                return;
             }
-            resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
-            class Particle {
-                constructor() {
-                    this.x = Math.random() * canvas.width;
-                    this.y = Math.random() * canvas.height;
-                    this.size = Math.random() * 2 + 1;
-                    this.speedX = Math.random() * 0.5 - 0.25;
-                    this.speedY = Math.random() * 0.5 - 0.25;
-                    this.color = 'rgba(20, 184, 166, 0.4)';
-                }
-                update() {
-                    this.x += this.speedX;
-                    this.y += this.speedY;
-                    if (this.size > 0.1) this.size -= 0.01;
-                    if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-                    if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
-                }
-                draw() {
-                    ctx.fillStyle = this.color;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            }
-            function initParticles() {
-                for (let i = 0; i < 75; i++) {
-                    particles.push(new Particle());
-                }
-            }
-            initParticles();
-            function animateParticles() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                for (let i = 0; i < particles.length; i++) {
-                    particles[i].update();
-                    particles[i].draw();
-                    if (particles[i].size <= 0.1) {
-                        particles.splice(i, 1);
-                        particles.push(new Particle());
-                        i--;
-                    }
-                }
-                requestAnimationFrame(animateParticles);
-            }
-            animateParticles();
-            // Scroll reveal
-            const revealElements = document.querySelectorAll('.reveal');
-            const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
-            const observer = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        observer.unobserve(entry.target);
-                    }
-                });
-            }, observerOptions);
-            revealElements.forEach(el => { observer.observe(el); });
-            // Tabs
-            const tabButtons = document.querySelectorAll('.tab-button');
-            const tabPanels = document.querySelectorAll('.tab-panel');
-            tabButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const targetPanelId = button.getAttribute('data-tab-target');
-                    tabButtons.forEach(btn => { btn.classList.remove('active'); });
-                    button.classList.add('active');
-                    tabPanels.forEach(panel => {
-                        if (panel.id === targetPanelId) {
-                            panel.classList.remove('hidden');
-                            setTimeout(() => { panel.classList.add('tab-fade-in'); }, 10);
-                        } else {
-                            panel.classList.add('hidden');
-                            panel.classList.remove('tab-fade-in');
+
+            // Visual Loading State
+            multiverseBtn.classList.add('animate-spin');
+            titleEl.classList.add('glitch-anim');
+            subtitleEl.innerText = "Scanning multiverse frequencies...";
+            badgeEl.innerText = "Quantum Jumping...";
+
+            // Trigger a particle explosion for effect
+            explode(width/2, height/2);
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: `You are controlling a portfolio website in the multiverse. Pick a random, distinct, creative theme (e.g., Cyberpunk, High Fantasy, Noir, Pirate, Sci-Fi, Western, 1980s Hacker, Lovecraftian).
+                                Rewrite the following text to match that theme specifically:
+                                Original Title: 'HELLO, I'M NAXXTRA'
+                                Original Subtitle: 'Operations Specialist. Push the particles away to connect.'
+                                
+                                Rules:
+                                1. Keep the name 'Naxxtra' in the title.
+                                2. Be creative and flavorful.
+                                3. Keep lengths similar to original.
+                                
+                                Return ONLY a JSON object with this structure: 
+                                { "theme": "Theme Name", "title": "New Title HTML", "subtitle": "New Subtitle Text" }`
+                            }]
+                        }],
+                        generationConfig: {
+                            responseMimeType: "application/json"
                         }
-                    });
+                    })
                 });
-            });
+
+                if (!response.ok) throw new Error('Gemini API Error');
+                
+                const data = await response.json();
+                const result = JSON.parse(data.candidates[0].content.parts[0].text);
+
+                // Apply the new reality
+                badgeEl.innerText = `Theme: ${result.theme}`;
+                
+                // For the title, we want to preserve the gradient span if possible, or just inject the HTML
+                // We trust the model to return a string, we wrap the name part in span manually if needed, 
+                // but let's just use the innerHTML returned for maximum flexibility.
+                titleEl.innerHTML = result.title; 
+                subtitleEl.innerHTML = result.subtitle;
+
+            } catch (error) {
+                console.error(error);
+                subtitleEl.innerText = "Multiverse connection failed. Reverting to timeline Alpha.";
+                setTimeout(() => restoreIdentity(), 2000);
+            } finally {
+                multiverseBtn.classList.remove('animate-spin');
+                titleEl.classList.remove('glitch-anim');
+            }
         });
+
+        function restoreIdentity() {
+            badgeEl.innerText = originalState.badge;
+            titleEl.innerHTML = originalState.title;
+            subtitleEl.innerHTML = originalState.subtitle;
+        }
+
+
+        /**
+         * INTERACTIVE PARTICLE SYSTEM
+         */
+        const canvas = document.getElementById('heroCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let particles = [];
+        let mouse = { x: -1000, y: -1000 };
+        
+        // Physics Configuration
+        const CONFIG = {
+            particleCount: 0, 
+            particleBaseSize: 3,
+            connectionDistance: 100,
+            repulsionRadius: 150,
+            repulsionForce: 5,
+            friction: 0.95,
+            returnSpeed: 0.02,
+            gravity: false,
+            colors: ['#22d3ee', '#818cf8', '#c084fc', '#e879f9'] 
+        };
+
+        // Resize handling
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            const area = width * height;
+            CONFIG.particleCount = Math.min(Math.floor(area / 2500), 800); 
+            initParticles();
+        }
+
+        class Particle {
+            constructor(x, y) {
+                this.originX = x;
+                this.originY = y;
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 2;
+                this.size = Math.random() * CONFIG.particleBaseSize + 1;
+                this.color = CONFIG.colors[Math.floor(Math.random() * CONFIG.colors.length)];
+                this.mass = this.size; 
+                this.angle = Math.random() * Math.PI * 2;
+            }
+
+            update() {
+                const dx = mouse.x - this.x;
+                const dy = mouse.y - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < CONFIG.repulsionRadius) {
+                    const forceDirectionX = dx / distance;
+                    const forceDirectionY = dy / distance;
+                    const force = (CONFIG.repulsionRadius - distance) / CONFIG.repulsionRadius;
+                    const direction = -1; 
+                    const power = force * CONFIG.repulsionForce * direction;
+                    
+                    this.vx += forceDirectionX * power;
+                    this.vy += forceDirectionY * power;
+                }
+
+                if (CONFIG.gravity) {
+                    this.vy += 0.5; 
+                    if (this.y + this.size > height) {
+                        this.y = height - this.size;
+                        this.vy *= -0.6; 
+                        this.vx *= 0.9; 
+                    }
+                    if (this.x + this.size > width || this.x - this.size < 0) {
+                        this.vx *= -1;
+                    }
+                } else {
+                    const homeDx = this.originX - this.x;
+                    const homeDy = this.originY - this.y;
+                    this.vx += homeDx * CONFIG.returnSpeed * 0.5;
+                    this.vy += homeDy * CONFIG.returnSpeed * 0.5;
+                }
+
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vx *= CONFIG.friction;
+                this.vy *= CONFIG.friction;
+            }
+
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < CONFIG.particleCount; i++) {
+                let x = Math.random() * width;
+                let y = Math.random() * height;
+                particles.push(new Particle(x, y));
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0,0, width, height);
+            
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.lineWidth = 0.5;
+            ctx.shadowBlur = 0; 
+            
+            for (let i = 0; i < particles.length; i++) {
+                if (i % 2 !== 0) continue; 
+                const p1 = particles[i];
+                for (let j = i; j < particles.length; j++) {
+                    const p2 = particles[j];
+                    const dx = p1.x - p2.x;
+                    const dy = p1.y - p2.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < CONFIG.connectionDistance) {
+                        ctx.beginPath();
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        // Event Listeners
+        window.addEventListener('resize', resize);
+        
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            const touch = e.touches[0];
+            mouse.x = touch.clientX;
+            mouse.y = touch.clientY;
+        }, { passive: true });
+
+        window.addEventListener('mouseleave', () => {
+            mouse.x = -1000;
+            mouse.y = -1000;
+        });
+
+        function explode(x, y) {
+            particles.forEach(p => {
+                const dx = p.x - x;
+                const dy = p.y - y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < 300) { 
+                    const force = (300 - dist) / 300;
+                    const angle = Math.atan2(dy, dx);
+                    const power = force * 30; 
+                    p.vx += Math.cos(angle) * power;
+                    p.vy += Math.sin(angle) * power;
+                }
+            });
+        }
+
+        window.addEventListener('mousedown', (e) => {
+            if(e.target.closest('button')) return;
+            explode(e.clientX, e.clientY);
+        });
+
+        window.addEventListener('touchstart', (e) => {
+             if(e.target.closest('button')) return;
+            const touch = e.touches[0];
+            mouse.x = touch.clientX;
+            mouse.y = touch.clientY;
+            explode(mouse.x, mouse.y);
+        }, { passive: true });
+
+
+        // Game UI Controls
+        const gravityBtn = document.getElementById('gravityBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        gravityBtn.addEventListener('click', () => {
+            CONFIG.gravity = !CONFIG.gravity;
+            if (CONFIG.gravity) {
+                gravityBtn.classList.add('bg-cyan-500', 'text-white');
+                gravityBtn.classList.remove('bg-cyan-600/20', 'text-cyan-400');
+                particles.forEach(p => p.vy += 2);
+            } else {
+                gravityBtn.classList.remove('bg-cyan-500', 'text-white');
+                gravityBtn.classList.add('bg-cyan-600/20', 'text-cyan-400');
+            }
+        });
+
+        resetBtn.addEventListener('click', () => {
+            explode(width/2, height/2);
+            restoreIdentity(); // Also restore text
+            setTimeout(() => {
+                initParticles();
+            }, 300);
+        });
+
+        // Initialization
+        resize();
+        animate();
+
     </script>
 </body>
 </html>
