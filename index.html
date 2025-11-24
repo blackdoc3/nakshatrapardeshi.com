@@ -13,14 +13,56 @@
     
     <style>
         /* --- General Reset --- */
+        :root {
+            --primary-color: #5c94fc; /* Mario Blue */
+            --accent-color: #3b82f6;
+            --text-color: white;
+        }
+
+        /* MATRIX MODE VARIABLES (Triggered via Konami Code) */
+        body.matrix-mode {
+            --primary-color: #000000;
+            --accent-color: #22c55e;
+            --text-color: #22c55e;
+            font-family: 'Courier New', monospace;
+        }
+
         body {
             margin: 0;
             padding: 0;
             overflow: hidden; /* Lock scroll initially */
             background-color: #0f172a; /* Slate 900 */
-            color: white;
+            color: var(--text-color);
             font-family: 'Rajdhani', sans-serif;
             user-select: none;
+            cursor: crosshair; /* 2. Custom Cursor */
+        }
+
+        /* --- 1. CRT SCANLINE EFFECT --- */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.1) 50%,
+                rgba(0,0,0,0.1)
+            );
+            background-size: 100% 4px;
+            z-index: 999; /* Topmost */
+            pointer-events: none;
+            opacity: 0.6;
+            animation: flicker 0.15s infinite;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.6; }
+            50% { opacity: 0.65; }
+            100% { opacity: 0.6; }
         }
 
         /* --- Game Intro Layer --- */
@@ -31,8 +73,13 @@
             width: 100%;
             height: 100%;
             z-index: 100; /* Top layer */
-            background-color: #5c94fc;
+            background-color: var(--primary-color);
             transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        body.matrix-mode #game-container {
+            background-color: #000;
+            border-bottom: 2px solid #0f0;
         }
 
         #game-canvas {
@@ -63,20 +110,19 @@
             z-index: 0;
             display: flex;
             justify-content: center;
-            /* Allow scrolling within this layer */
             overflow-y: auto; 
             overflow-x: hidden;
-            pointer-events: none; /* Default none, content enables it */
+            pointer-events: none; 
         }
         
         /* Custom Scrollbar */
         #portfolio-layer::-webkit-scrollbar { width: 8px; }
-        #portfolio-layer::-webkit-scrollbar-track { bg: #0f172a; }
-        #portfolio-layer::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
+        #portfolio-layer::-webkit-scrollbar-track { background: #0f172a; }
+        #portfolio-layer::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 4px; }
 
         /* The Canvas for Particles */
         #particle-canvas {
-            position: fixed; /* Fixed so it doesn't scroll away */
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -91,7 +137,7 @@
             z-index: 5;
             width: 100%;
             max-width: 900px;
-            padding: 40px 20px 100px 20px; /* Extra bottom padding */
+            padding: 40px 20px 100px 20px;
             pointer-events: auto;
             text-align: left;
         }
@@ -117,11 +163,17 @@
             position: relative;
             overflow: hidden;
         }
+        body.matrix-mode .cyber-card {
+            background: rgba(0, 20, 0, 0.9);
+            border-color: #0f0;
+            color: #0f0;
+        }
+
         .cyber-card::before {
             content: '';
             position: absolute;
             top: 0; left: 0; width: 4px; height: 100%;
-            background: #3b82f6;
+            background: var(--accent-color);
         }
         .cyber-card:hover {
             border-color: #60a5fa;
@@ -140,7 +192,7 @@
             position: absolute;
             left: -6px; top: 5px;
             width: 10px; height: 10px;
-            background: #3b82f6;
+            background: var(--accent-color);
             border-radius: 50%;
         }
 
@@ -156,6 +208,11 @@
             margin-bottom: 5px;
             font-family: 'Press Start 2P', cursive;
             font-size: 8px;
+        }
+        body.matrix-mode .tech-tag {
+            color: #0f0;
+            background: rgba(0,255,0,0.1);
+            border: 1px solid #0f0;
         }
 
         /* Social Grid */
@@ -211,13 +268,23 @@
         #gravity-btn:hover { background: #e11d48; border-color: #e11d48; }
         #gravity-btn.active { background: #22c55e; border-color: #22c55e; box-shadow: 0 0 20px #22c55e; }
 
+        /* Typing Effect Cursor */
+        .typing-cursor::after {
+            content: '_';
+            animation: blink 1s infinite;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
         /* Active State */
-        body.site-active { overflow: hidden; } /* Body stays hidden, layer scrolls */
+        body.site-active { overflow: hidden; } 
         body.site-active #game-container { transform: translateY(-100%); }
         body.site-active #portfolio-layer { opacity: 1; pointer-events: auto; }
     </style>
 </head>
 <body>
+    
+    <!-- CRT Overlay -->
+    <div class="scanlines"></div>
 
     <!-- === 1. RETRO GAME INTRO LAYER === -->
     <div id="game-container">
@@ -249,8 +316,13 @@
                 <div class="inline-block border border-green-500 bg-green-500/10 px-3 py-1 rounded text-xs text-green-400 font-mono mb-4 tracking-widest">
                     SYSTEM UNLOCKED
                 </div>
-                <h1 class="text-6xl md:text-8xl font-bold mb-4 cyber-text glitch-effect">NAXXTRA</h1>
-                <p class="text-xl md:text-2xl text-blue-300 font-light tracking-widest">PROCESS IMPROVEMENT SPECIALIST</p>
+                <!-- 3. Typing Effect Target -->
+                <h1 id="hero-title" class="text-6xl md:text-8xl font-bold mb-4 cyber-text glitch-effect typing-cursor">
+                    <!-- Text injected via JS -->
+                </h1>
+                <p id="hero-subtitle" class="text-xl md:text-2xl text-blue-300 font-light tracking-widest">
+                    <!-- Text injected via JS -->
+                </p>
                 <div class="flex flex-wrap justify-center gap-2 mt-4 text-gray-400 text-sm">
                     <span><i class="fa-solid fa-location-dot mr-2"></i>London, UK</span>
                     <span class="mx-2">|</span>
@@ -275,30 +347,27 @@
             <div class="cyber-card">
                 <h3 class="text-xl font-bold mb-6 text-blue-400 font-mono"><i class="fa-solid fa-briefcase mr-2"></i>MISSION_LOGS (EXPERIENCE)</h3>
                 
-                <!-- Job 1 -->
                 <div class="timeline-item">
                     <div class="flex flex-wrap justify-between items-start mb-1">
-                        <h4 class="text-lg font-bold text-white">Process Improvement Specialist</h4>
+                        <h4 class="text-lg font-bold">Process Improvement Specialist</h4>
                         <span class="text-xs bg-blue-900 text-blue-200 px-2 py-1 rounded">July 2025 - Present</span>
                     </div>
                     <div class="text-blue-400 text-sm mb-2">Amazon | Essex, UK</div>
                     <p class="text-gray-400 text-sm">Optimizing operational workflows and driving efficiency improvements in Amazon's fulfillment network.</p>
                 </div>
 
-                <!-- Job 2 -->
                 <div class="timeline-item">
                     <div class="flex flex-wrap justify-between items-start mb-1">
-                        <h4 class="text-lg font-bold text-white">Operations Management Intern</h4>
+                        <h4 class="text-lg font-bold">Operations Management Intern</h4>
                         <span class="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded">Jan 2025 - July 2025</span>
                     </div>
                     <div class="text-blue-400 text-sm mb-2">Amazon | London, UK</div>
                     <p class="text-gray-400 text-sm">Gained hands-on experience in large-scale operations management and supply chain logistics.</p>
                 </div>
 
-                <!-- Job 3 -->
                 <div class="timeline-item">
                     <div class="flex flex-wrap justify-between items-start mb-1">
-                        <h4 class="text-lg font-bold text-white">Founder</h4>
+                        <h4 class="text-lg font-bold">Founder</h4>
                         <span class="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded">July 2024 - Present</span>
                     </div>
                     <div class="text-blue-400 text-sm mb-2">SOLARB Space | UK</div>
@@ -310,10 +379,9 @@
                     </div>
                 </div>
 
-                <!-- Job 4 -->
                 <div class="timeline-item">
                     <div class="flex flex-wrap justify-between items-start mb-1">
-                        <h4 class="text-lg font-bold text-white">Management Trainee</h4>
+                        <h4 class="text-lg font-bold">Management Trainee</h4>
                         <span class="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded">Dec 2022 - Feb 2023</span>
                     </div>
                     <div class="text-blue-400 text-sm mb-2">Morjim Castle Beach Resort | India</div>
@@ -329,13 +397,13 @@
                     <h3 class="text-xl font-bold mb-4 text-green-400 font-mono"><i class="fa-solid fa-graduation-cap mr-2"></i>TRAINING</h3>
                     
                     <div class="mb-4">
-                        <h4 class="font-bold text-white">MSc Operations Management</h4>
+                        <h4 class="font-bold">MSc Operations Management</h4>
                         <p class="text-sm text-gray-400">Warwick Business School</p>
                         <p class="text-xs text-gray-500">2023 - 2024</p>
                     </div>
 
                     <div class="mb-4">
-                        <h4 class="font-bold text-white">BTech Aeronautical Engineering</h4>
+                        <h4 class="font-bold">BTech Aeronautical Engineering</h4>
                         <p class="text-sm text-gray-400">Amity University Mumbai</p>
                         <p class="text-xs text-gray-500">2018 - 2022</p>
                     </div>
@@ -416,6 +484,39 @@
     <!-- === SCRIPTS === -->
     <script>
     (function() { // Start IIFE
+        
+        /* --- 5. AUDIO SYSTEM (Synthesizer) --- */
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playJumpSound() {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.1);
+        }
+
+        /* --- KONAMI CODE LISTENER --- */
+        const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+        let konamiIndex = 0;
+        document.addEventListener('keydown', (e) => {
+            if (e.key === konamiCode[konamiIndex]) {
+                konamiIndex++;
+                if (konamiIndex === konamiCode.length) {
+                    document.body.classList.toggle('matrix-mode');
+                    konamiIndex = 0;
+                }
+            } else {
+                konamiIndex = 0;
+            }
+        });
+
         /* =========================================
            PART 1: THE RETRO RUNNER GAME
            ========================================= */
@@ -492,20 +593,50 @@
                 }
             });
 
-            // Draw
-            gCtx.fillStyle = '#5c94fc';
+            // Draw Sky (Background)
+            gCtx.fillStyle = document.body.classList.contains('matrix-mode') ? '#000' : '#5c94fc';
             gCtx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
-            
-            // Clouds
-            gCtx.fillStyle = 'rgba(255,255,255,0.5)';
-            gCtx.beginPath();
-            gCtx.arc((200 - scroll*0.2) % (gameCanvas.width+200), 100, 30, 0, Math.PI*2);
-            gCtx.fill();
+
+            if(!document.body.classList.contains('matrix-mode')) {
+                // Draw Sun
+                gCtx.fillStyle = '#FDB813';
+                gCtx.beginPath();
+                gCtx.arc(gameCanvas.width - 100, 80, 40, 0, Math.PI * 2);
+                gCtx.fill();
+                gCtx.fillStyle = 'rgba(253, 184, 19, 0.3)';
+                gCtx.beginPath();
+                gCtx.arc(gameCanvas.width - 100, 80, 50, 0, Math.PI * 2);
+                gCtx.fill();
+
+                // Draw Trees (Parallax Background)
+                const treeScroll = scroll * 0.5; 
+                for(let i = 0; i < 40; i++) {
+                    let tx = (i * 300) - treeScroll;
+                    if(tx > -100 && tx < gameCanvas.width) {
+                        const groundY = gameCanvas.height - 60;
+                        gCtx.fillStyle = '#7c2d12'; 
+                        gCtx.fillRect(tx + 15, groundY - 60, 20, 60);
+                        gCtx.fillStyle = '#166534'; 
+                        gCtx.fillRect(tx, groundY - 100, 50, 40); 
+                        gCtx.fillStyle = '#15803d'; 
+                        gCtx.fillRect(tx + 5, groundY - 120, 40, 30); 
+                        gCtx.fillStyle = '#22c55e'; 
+                        gCtx.fillRect(tx + 10, groundY - 130, 30, 20); 
+                    }
+                }
+            } else {
+                // Matrix Mode Background
+                gCtx.fillStyle = '#0f0';
+                gCtx.font = '14px monospace';
+                for(let i=0; i<20; i++) {
+                     gCtx.fillText(String.fromCharCode(0x30A0 + Math.random() * 96), (i*100 - scroll*0.5) % gameCanvas.width, Math.random() * gameCanvas.height);
+                }
+            }
 
             // Floor
-            gCtx.fillStyle = '#5D4037';
+            gCtx.fillStyle = document.body.classList.contains('matrix-mode') ? '#001100' : '#5D4037';
             gCtx.fillRect(0, gameCanvas.height - 60, gameCanvas.width, 60);
-            gCtx.fillStyle = '#4CAF50';
+            gCtx.fillStyle = document.body.classList.contains('matrix-mode') ? '#0f0' : '#4CAF50';
             gCtx.fillRect(0, gameCanvas.height - 60, gameCanvas.width, 10);
 
             // Objects
@@ -529,7 +660,7 @@
                 }
             });
 
-            // Player (Mario-ish)
+            // Player
             const px = hero.x, py = hero.y;
             gCtx.fillStyle = '#ef4444'; // Hat
             gCtx.fillRect(px, py, 30, 10);
@@ -554,16 +685,23 @@
         }
 
         // Input
-        window.addEventListener('keydown', e => {
-            if((e.code === 'Space' || e.code === 'ArrowUp') && hero.grounded) {
-                hero.dy = JUMP; hero.grounded = false;
+        function handleJump() {
+            if(hero.grounded) { 
+                hero.dy = JUMP; 
+                hero.grounded = false; 
+                playJumpSound();
             }
+        }
+
+        window.addEventListener('keydown', e => {
+            if((e.code === 'Space' || e.code === 'ArrowUp') && hero.grounded) handleJump();
         });
-        window.addEventListener('touchstart', () => {
-             if(hero.grounded) { hero.dy = JUMP; hero.grounded = false; }
+        window.addEventListener('touchstart', (e) => {
+             e.preventDefault(); 
+             if(hero.grounded) handleJump();
         }, {passive: false});
         window.addEventListener('mousedown', () => {
-             if(hero.grounded) { hero.dy = JUMP; hero.grounded = false; }
+             if(hero.grounded) handleJump();
         });
 
         // Start Game
@@ -571,20 +709,47 @@
 
 
         /* =========================================
-           PART 2: PARTICLE SYSTEM (THE REWARD)
+           PART 2: PARTICLE SYSTEM & TYPING
            ========================================= */
         
         function unlockSite() {
-            // Stop Game
             gameRunning = false;
             cancelAnimationFrame(gameFrameId);
-            
-            // Transition UI
             document.body.classList.add('site-active');
-            
-            // Init Particles
             initParticles();
+            typeWriterEffect(); // Trigger typing
         }
+
+        // --- TYPING EFFECT ---
+        function typeWriterEffect() {
+            const titleEl = document.getElementById('hero-title');
+            const subEl = document.getElementById('hero-subtitle');
+            const titleText = "NAXXTRA";
+            const subText = "PROCESS IMPROVEMENT SPECIALIST";
+            
+            let i = 0;
+            function typeTitle() {
+                if (i < titleText.length) {
+                    titleEl.innerHTML += titleText.charAt(i);
+                    i++;
+                    setTimeout(typeTitle, 150);
+                } else {
+                    titleEl.classList.remove('typing-cursor'); // Stop blink on title
+                    subEl.classList.add('typing-cursor'); // Start blink on sub
+                    let j = 0;
+                    function typeSub() {
+                        if (j < subText.length) {
+                            subEl.innerHTML += subText.charAt(j);
+                            j++;
+                            setTimeout(typeSub, 50);
+                        }
+                    }
+                    setTimeout(typeSub, 300);
+                }
+            }
+            typeTitle();
+        }
+
 
         const pCanvas = document.getElementById('particle-canvas');
         const pCtx = pCanvas.getContext('2d');
@@ -595,86 +760,50 @@
         let gravityEnabled = false;
         let shockwave = 0;
 
-        // Toggle Gravity
         gravityBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Don't trigger shockwave
+            e.stopPropagation(); 
             gravityEnabled = !gravityEnabled;
             gravityBtn.classList.toggle('active');
-            
-            // Pop effect
             particles.forEach(p => {
-                p.vy = -Math.random() * 5; // Little jump
+                p.vy = -Math.random() * 5; 
             });
         });
 
         class Particle {
             constructor(x, y) {
-                this.x = x;
-                this.y = y;
-                this.baseX = x;
-                this.baseY = y;
+                this.x = x; this.y = y; this.baseX = x; this.baseY = y;
                 this.size = Math.random() * 3 + 1;
                 this.density = (Math.random() * 30) + 1;
-                this.vx = 0;
-                this.vy = 0;
-                this.color = Math.random() > 0.5 ? '#38bdf8' : '#818cf8'; // Tailwind sky-400 or indigo-400
+                this.vx = 0; this.vy = 0;
+                this.color = Math.random() > 0.5 ? '#38bdf8' : '#818cf8';
             }
-
             draw() {
-                pCtx.fillStyle = this.color;
+                pCtx.fillStyle = document.body.classList.contains('matrix-mode') ? '#0f0' : this.color;
                 pCtx.beginPath();
                 pCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                pCtx.closePath();
                 pCtx.fill();
             }
-
             update() {
                 if (gravityEnabled) {
-                    // === GRAVITY MODE ===
-                    this.vy += 0.5; // Gravity force
-                    this.y += this.vy;
-                    this.x += this.vx;
-
-                    // Floor bounce
+                    this.vy += 0.5; this.y += this.vy; this.x += this.vx;
                     if (this.y + this.size > pCanvas.height) {
-                        this.y = pCanvas.height - this.size;
-                        this.vy *= -0.6; // Lose energy
-                        this.vx *= 0.9;  // Friction
+                        this.y = pCanvas.height - this.size; this.vy *= -0.6; this.vx *= 0.9;
                     }
-                    // Walls
-                    if (this.x + this.size > pCanvas.width || this.x - this.size < 0) {
-                        this.vx *= -1;
-                    }
+                    if (this.x + this.size > pCanvas.width || this.x - this.size < 0) this.vx *= -1;
                 } else {
-                    // === CONSTELLATION MODE ===
-                    
-                    // Mouse Interaction (Flee)
-                    let dx = mouse.x - this.x;
-                    let dy = mouse.y - this.y;
+                    let dx = mouse.x - this.x; let dy = mouse.y - this.y;
                     let distance = Math.sqrt(dx * dx + dy * dy);
-                    
-                    // Shockwave force calculation
-                    let forceDirectionX = dx / distance;
-                    let forceDirectionY = dy / distance;
+                    let forceDirectionX = dx / distance; let forceDirectionY = dy / distance;
                     let maxDistance = mouse.radius + shockwave;
                     let force = (maxDistance - distance) / maxDistance;
-                    
                     let directionX = forceDirectionX * force * this.density;
                     let directionY = forceDirectionY * force * this.density;
 
                     if (distance < mouse.radius + shockwave) {
-                        this.x -= directionX;
-                        this.y -= directionY;
+                        this.x -= directionX; this.y -= directionY;
                     } else {
-                        // Return to base position
-                        if (this.x !== this.baseX) {
-                            let dx = this.x - this.baseX;
-                            this.x -= dx / 20; // Ease back speed
-                        }
-                        if (this.y !== this.baseY) {
-                            let dy = this.y - this.baseY;
-                            this.y -= dy / 20;
-                        }
+                        if (this.x !== this.baseX) { let dx = this.x - this.baseX; this.x -= dx / 20; }
+                        if (this.y !== this.baseY) { let dy = this.y - this.baseY; this.y -= dy / 20; }
                     }
                 }
             }
@@ -684,36 +813,20 @@
             pCanvas.width = window.innerWidth;
             pCanvas.height = window.innerHeight;
             particles = [];
-            
-            // Create a dense cloud in the center (where text is)
-            // and scattered particles elsewhere
             const numberOfParticles = (pCanvas.width * pCanvas.height) / 8000;
-            
             for (let i = 0; i < numberOfParticles; i++) {
-                let x = Math.random() * pCanvas.width;
-                let y = Math.random() * pCanvas.height;
-                particles.push(new Particle(x, y));
+                particles.push(new Particle(Math.random() * pCanvas.width, Math.random() * pCanvas.height));
             }
-            
             animateParticles();
         }
 
         function animateParticles() {
             pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
-            
             for (let i = 0; i < particles.length; i++) {
-                particles[i].draw();
-                particles[i].update();
+                particles[i].draw(); particles[i].update();
             }
-            
-            // Draw Constellation Lines (Only if not in gravity mode and close enough)
-            if (!gravityEnabled) {
-                connectParticles();
-            }
-
-            // Decay shockwave
+            if (!gravityEnabled) connectParticles();
             if(shockwave > 0) shockwave -= 5;
-
             requestAnimationFrame(animateParticles);
         }
 
@@ -724,10 +837,11 @@
                     let dx = particles[a].x - particles[b].x;
                     let dy = particles[a].y - particles[b].y;
                     let distance = dx * dx + dy * dy;
-
-                    if (distance < 3600) { // Max distance squared (60px)
+                    if (distance < 3600) { 
                         opacityValue = 1 - (distance / 3600);
-                        pCtx.strokeStyle = 'rgba(148, 163, 184,' + opacityValue + ')'; // Slate-400
+                        pCtx.strokeStyle = document.body.classList.contains('matrix-mode') ? 
+                            'rgba(0, 255, 0,' + opacityValue + ')' : 
+                            'rgba(148, 163, 184,' + opacityValue + ')';
                         pCtx.lineWidth = 1;
                         pCtx.beginPath();
                         pCtx.moveTo(particles[a].x, particles[a].y);
@@ -738,31 +852,16 @@
             }
         }
 
-        // Mouse Listeners for Portfolio
-        window.addEventListener('mousemove', (e) => {
-            mouse.x = e.x;
-            mouse.y = e.y;
-        });
-
-        // Touch for Mobile
-        window.addEventListener('touchmove', (e) => {
-            mouse.x = e.touches[0].clientX;
-            mouse.y = e.touches[0].clientY;
-        });
-
-        // Shockwave Click
+        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+        window.addEventListener('touchmove', (e) => { mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; });
         window.addEventListener('click', (e) => {
-            // Only if not clicking a link or button
             if (e.target.tagName !== 'A' && e.target.tagName !== 'BUTTON' && !e.target.closest('a') && !e.target.closest('button')) {
-                shockwave = 200; // Trigger explosion
-                setTimeout(() => shockwave = 0, 500);
+                shockwave = 200; setTimeout(() => shockwave = 0, 500);
             }
         });
-        
         window.addEventListener('resize', () => {
-            pCanvas.width = window.innerWidth;
-            pCanvas.height = window.innerHeight;
-            pCanvas.style.height = window.innerHeight + 'px'; // Explicit height for mobile browsers
+            pCanvas.width = window.innerWidth; pCanvas.height = window.innerHeight;
+            pCanvas.style.height = window.innerHeight + 'px';
         });
 
     })(); // End IIFE
