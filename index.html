@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Naxxtra | Operations Specialist</title>
+    <title>Naxxtra | Process Improvement Specialist</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -61,32 +61,39 @@
             opacity: 0;
             transition: opacity 1s ease-in;
             z-index: 0;
-            overflow: hidden;
             display: flex;
-            align-items: center;
             justify-content: center;
+            /* Allow scrolling within this layer */
+            overflow-y: auto; 
+            overflow-x: hidden;
+            pointer-events: none; /* Default none, content enables it */
         }
+        
+        /* Custom Scrollbar */
+        #portfolio-layer::-webkit-scrollbar { width: 8px; }
+        #portfolio-layer::-webkit-scrollbar-track { bg: #0f172a; }
+        #portfolio-layer::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
 
         /* The Canvas for Particles */
         #particle-canvas {
-            position: absolute;
+            position: fixed; /* Fixed so it doesn't scroll away */
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 10; /* Above text, below UI buttons */
-            pointer-events: none; /* Let clicks pass through to links */
+            z-index: 1; 
+            pointer-events: none;
         }
 
         /* The Text Content (Under Particles) */
         #content-container {
             position: relative;
-            z-index: 5; /* Below particles initially */
-            text-align: center;
+            z-index: 5;
             width: 100%;
-            max-width: 1000px;
-            padding: 20px;
+            max-width: 900px;
+            padding: 40px 20px 100px 20px; /* Extra bottom padding */
             pointer-events: auto;
+            text-align: left;
         }
 
         .cyber-text {
@@ -99,19 +106,70 @@
             text-shadow: 2px 2px 0px #ec4899, -2px -2px 0px #3b82f6;
         }
 
+        /* Section Cards */
+        .cyber-card {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid #334155;
+            backdrop-filter: blur(4px);
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        .cyber-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: #3b82f6;
+        }
+        .cyber-card:hover {
+            border-color: #60a5fa;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+        }
+
+        /* Experience Timeline */
+        .timeline-item {
+            border-left: 2px solid #334155;
+            padding-left: 20px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -6px; top: 5px;
+            width: 10px; height: 10px;
+            background: #3b82f6;
+            border-radius: 50%;
+        }
+
+        /* Tags */
+        .tech-tag {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.1);
+            color: #38bdf8;
+            padding: 4px 8px;
+            font-size: 12px;
+            border-radius: 4px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 8px;
+        }
+
         /* Social Grid */
         .social-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
-            margin-top: 40px;
         }
         @media (min-width: 768px) {
             .social-grid { grid-template-columns: repeat(4, 1fr); }
         }
 
         .social-card {
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(30, 41, 59, 0.8);
             border: 1px solid #334155;
             padding: 15px;
             border-radius: 4px;
@@ -123,28 +181,17 @@
             color: #cbd5e1;
             font-family: 'Press Start 2P', cursive;
             font-size: 10px;
-            position: relative;
-            overflow: hidden;
-            z-index: 20; /* Make sure clickable */
         }
-
         .social-card:hover {
-            transform: translateY(-2px) scale(1.02);
+            transform: translateY(-2px);
             border-color: #38bdf8;
-            background: rgba(56, 189, 248, 0.1);
+            background: rgba(56, 189, 248, 0.15);
             color: white;
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
-        }
-
-        .social-card i {
-            font-size: 16px;
-            width: 24px;
-            text-align: center;
         }
 
         /* Gravity Toggle Button */
         #gravity-btn {
-            position: absolute;
+            position: fixed;
             top: 20px;
             right: 20px;
             z-index: 50;
@@ -161,24 +208,13 @@
             align-items: center;
             justify-content: center;
         }
-        #gravity-btn:hover {
-            background: #e11d48;
-            border-color: #e11d48;
-            transform: scale(1.1);
-        }
-        #gravity-btn.active {
-            background: #22c55e;
-            border-color: #22c55e;
-            box-shadow: 0 0 20px #22c55e;
-        }
+        #gravity-btn:hover { background: #e11d48; border-color: #e11d48; }
+        #gravity-btn.active { background: #22c55e; border-color: #22c55e; box-shadow: 0 0 20px #22c55e; }
 
-        /* Active State for body */
-        body.site-active #game-container {
-            transform: translateY(-100%);
-        }
-        body.site-active #portfolio-layer {
-            opacity: 1;
-        }
+        /* Active State */
+        body.site-active { overflow: hidden; } /* Body stays hidden, layer scrolls */
+        body.site-active #game-container { transform: translateY(-100%); }
+        body.site-active #portfolio-layer { opacity: 1; pointer-events: auto; }
     </style>
 </head>
 <body>
@@ -186,23 +222,18 @@
     <!-- === 1. RETRO GAME INTRO LAYER === -->
     <div id="game-container">
         <canvas id="game-canvas"></canvas>
-        
         <div class="game-ui" style="top: 40%;">
-            <!-- Removed Heading -->
             <p class="text-xs md:text-sm text-yellow-300 animate-pulse">REACH THE FLAG TO ENTER</p>
         </div>
-
         <div class="game-ui" style="bottom: 20px;">
             <p class="text-[10px] text-white opacity-80">SPACE / TAP TO JUMP</p>
         </div>
-
-        <!-- Removed Skip Button -->
     </div>
 
     <!-- === 2. INTERACTIVE PORTFOLIO LAYER === -->
     <div id="portfolio-layer">
         
-        <!-- Canvas for Particles (Overlay) -->
+        <!-- Canvas for Particles (Fixed Background) -->
         <canvas id="particle-canvas"></canvas>
 
         <!-- Magnet Gravity Button -->
@@ -212,11 +243,134 @@
 
         <!-- Main Content -->
         <div id="content-container">
-            <h2 class="text-green-400 font-mono text-sm mb-2 tracking-widest">SYSTEM UNLOCKED</h2>
-            <h1 class="text-6xl md:text-8xl font-bold mb-2 cyber-text glitch-effect">NAXXTRA</h1>
-            <p class="text-xl md:text-2xl text-blue-300 font-light tracking-[0.2em] mb-12">OPERATIONS SPECIALIST</p>
+            
+            <!-- Header -->
+            <header class="text-center mb-16 mt-10">
+                <div class="inline-block border border-green-500 bg-green-500/10 px-3 py-1 rounded text-xs text-green-400 font-mono mb-4 tracking-widest">
+                    SYSTEM UNLOCKED
+                </div>
+                <h1 class="text-6xl md:text-8xl font-bold mb-4 cyber-text glitch-effect">NAXXTRA</h1>
+                <p class="text-xl md:text-2xl text-blue-300 font-light tracking-widest">PROCESS IMPROVEMENT SPECIALIST</p>
+                <div class="flex flex-wrap justify-center gap-2 mt-4 text-gray-400 text-sm">
+                    <span><i class="fa-solid fa-location-dot mr-2"></i>London, UK</span>
+                    <span class="mx-2">|</span>
+                    <span><i class="fa-brands fa-amazon mr-2"></i>Amazon</span>
+                    <span class="mx-2">|</span>
+                    <span><i class="fa-solid fa-rocket mr-2"></i>Operations</span>
+                </div>
+            </header>
 
-            <!-- Social Grid -->
+            <!-- About Section -->
+            <div class="cyber-card">
+                <h3 class="text-xl font-bold mb-4 text-purple-400 font-mono"><i class="fa-solid fa-user-astronaut mr-2"></i>PROFILE_SUMMARY</h3>
+                <p class="text-gray-300 leading-relaxed mb-4">
+                    I'm driven by curiosity and a passion for finding smarter, more sustainable solutions. Whether it's optimizing operations, exploring trading strategies, or tapping into the potential of renewable energy, I thrive on turning challenges into opportunities.
+                </p>
+                <p class="text-gray-400 text-sm italic">
+                    "Every challenge is an opportunity to learn, adapt, and leave things better than I found them."
+                </p>
+            </div>
+
+            <!-- Experience Section -->
+            <div class="cyber-card">
+                <h3 class="text-xl font-bold mb-6 text-blue-400 font-mono"><i class="fa-solid fa-briefcase mr-2"></i>MISSION_LOGS (EXPERIENCE)</h3>
+                
+                <!-- Job 1 -->
+                <div class="timeline-item">
+                    <div class="flex flex-wrap justify-between items-start mb-1">
+                        <h4 class="text-lg font-bold text-white">Process Improvement Specialist</h4>
+                        <span class="text-xs bg-blue-900 text-blue-200 px-2 py-1 rounded">July 2025 - Present</span>
+                    </div>
+                    <div class="text-blue-400 text-sm mb-2">Amazon | Essex, UK</div>
+                    <p class="text-gray-400 text-sm">Optimizing operational workflows and driving efficiency improvements in Amazon's fulfillment network.</p>
+                </div>
+
+                <!-- Job 2 -->
+                <div class="timeline-item">
+                    <div class="flex flex-wrap justify-between items-start mb-1">
+                        <h4 class="text-lg font-bold text-white">Operations Management Intern</h4>
+                        <span class="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded">Jan 2025 - July 2025</span>
+                    </div>
+                    <div class="text-blue-400 text-sm mb-2">Amazon | London, UK</div>
+                    <p class="text-gray-400 text-sm">Gained hands-on experience in large-scale operations management and supply chain logistics.</p>
+                </div>
+
+                <!-- Job 3 -->
+                <div class="timeline-item">
+                    <div class="flex flex-wrap justify-between items-start mb-1">
+                        <h4 class="text-lg font-bold text-white">Founder</h4>
+                        <span class="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded">July 2024 - Present</span>
+                    </div>
+                    <div class="text-blue-400 text-sm mb-2">SOLARB Space | UK</div>
+                    <p class="text-gray-400 text-sm mb-2">Managing diversified crypto portfolios, developing smart contracts, and designing tokenomics/DAOs.</p>
+                    <div>
+                        <span class="tech-tag">BLOCKCHAIN</span>
+                        <span class="tech-tag">TRADING</span>
+                        <span class="tech-tag">STRATEGY</span>
+                    </div>
+                </div>
+
+                <!-- Job 4 -->
+                <div class="timeline-item">
+                    <div class="flex flex-wrap justify-between items-start mb-1">
+                        <h4 class="text-lg font-bold text-white">Management Trainee</h4>
+                        <span class="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded">Dec 2022 - Feb 2023</span>
+                    </div>
+                    <div class="text-blue-400 text-sm mb-2">Morjim Castle Beach Resort | India</div>
+                    <p class="text-gray-400 text-sm">Improved guest satisfaction by 15%, reduced room turnover by 20%, and utilized data analytics to boost operational efficiency by 30%.</p>
+                </div>
+            </div>
+
+            <!-- Skills & Education Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- Education -->
+                <div class="cyber-card">
+                    <h3 class="text-xl font-bold mb-4 text-green-400 font-mono"><i class="fa-solid fa-graduation-cap mr-2"></i>TRAINING</h3>
+                    
+                    <div class="mb-4">
+                        <h4 class="font-bold text-white">MSc Operations Management</h4>
+                        <p class="text-sm text-gray-400">Warwick Business School</p>
+                        <p class="text-xs text-gray-500">2023 - 2024</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h4 class="font-bold text-white">BTech Aeronautical Engineering</h4>
+                        <p class="text-sm text-gray-400">Amity University Mumbai</p>
+                        <p class="text-xs text-gray-500">2018 - 2022</p>
+                    </div>
+                </div>
+
+                <!-- Skills -->
+                <div class="cyber-card">
+                    <h3 class="text-xl font-bold mb-4 text-yellow-400 font-mono"><i class="fa-solid fa-microchip mr-2"></i>STATS & SKILLS</h3>
+                    
+                    <div class="mb-4">
+                        <h5 class="text-xs font-bold text-gray-500 mb-2 uppercase">Core Competencies</h5>
+                        <div class="flex flex-wrap">
+                            <span class="tech-tag">IP Management</span>
+                            <span class="tech-tag">Data Privacy</span>
+                            <span class="tech-tag">SQL Essentials</span>
+                            <span class="tech-tag">Project Mgmt</span>
+                            <span class="tech-tag">Data Analytics</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h5 class="text-xs font-bold text-gray-500 mb-2 uppercase">Languages</h5>
+                        <div class="space-y-1 text-sm text-gray-300">
+                            <div class="flex justify-between"><span>English</span> <span class="text-green-400">Professional</span></div>
+                            <div class="flex justify-between"><span>Hindi</span> <span class="text-green-400">Professional</span></div>
+                            <div class="flex justify-between"><span>Marathi</span> <span class="text-green-400">Native</span></div>
+                            <div class="flex justify-between"><span>Japanese</span> <span class="text-yellow-400">Elementary</span></div>
+                            <div class="flex justify-between"><span>German</span> <span class="text-yellow-400">Limited</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Social Links -->
+            <h3 class="text-center text-gray-500 font-mono text-xs mb-4 mt-8">ESTABLISH_UPLINK</h3>
             <div class="social-grid">
                 <a href="mailto:nakshatrapardeshi@gmail.com" class="social-card">
                     <i class="fa-solid fa-envelope text-red-400"></i>
@@ -251,6 +405,11 @@
                     <span>YOUTUBE</span>
                 </a>
             </div>
+
+            <footer class="text-center text-gray-600 text-xs mt-12 mb-4 font-mono">
+                TERMINAL SESSION ACTIVE // ID: NAXXTRA_V2.0
+            </footer>
+
         </div>
     </div>
 
@@ -536,13 +695,6 @@
                 particles.push(new Particle(x, y));
             }
             
-            // Extra density over the text area
-            for(let i=0; i<100; i++) {
-                let x = (pCanvas.width/2 - 300) + Math.random() * 600;
-                let y = (pCanvas.height/2 - 100) + Math.random() * 200;
-                particles.push(new Particle(x, y));
-            }
-
             animateParticles();
         }
 
@@ -610,6 +762,7 @@
         window.addEventListener('resize', () => {
             pCanvas.width = window.innerWidth;
             pCanvas.height = window.innerHeight;
+            pCanvas.style.height = window.innerHeight + 'px'; // Explicit height for mobile browsers
         });
 
     })(); // End IIFE
