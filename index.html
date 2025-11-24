@@ -35,10 +35,12 @@
             color: var(--text-color);
             font-family: 'Rajdhani', sans-serif;
             user-select: none;
-            cursor: crosshair; /* 2. Custom Cursor */
+            
+            /* 1. CUSTOM ROCKET CURSOR */
+            cursor: url("data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M13.1096 2.06733C13.2662 2.14923 13.3934 2.27646 13.4753 2.43306L20.4753 15.8151C20.7303 16.3026 20.5418 16.9044 20.0543 17.1594C19.9079 17.236 19.7441 17.2758 19.5789 17.2758H16.7368L18.6315 21.0652C18.8773 21.5568 18.678 22.1545 18.1864 22.4003C18.0267 22.4802 17.8488 22.5126 17.671 22.4942L11.9999 21.909L6.32884 22.4942C5.78167 22.5507 5.29525 22.1499 5.23881 21.6028C5.22047 21.4249 5.25287 21.2471 5.33272 21.0874L7.22736 17.2758H4.38526C3.83297 17.2758 3.38526 16.8281 3.38526 16.2758C3.38526 16.1106 3.42503 15.9468 3.50162 15.8004L10.5016 2.43306C10.7566 1.94559 11.3584 1.75711 11.8459 2.01211C12.0025 2.09401 12.1297 2.22124 12.2116 2.37784L11.8053 2.16522L11.9778 2.075H12.0221L13.1096 2.06733Z' fill='white' stroke='black' stroke-width='1.5'/%3E%3C/svg%3E") 0 0, auto;
         }
 
-        /* --- 1. CRT SCANLINE EFFECT --- */
+        /* --- 2. CRT SCANLINE EFFECT --- */
         .scanlines {
             position: fixed;
             top: 0;
@@ -117,7 +119,7 @@
         
         /* Custom Scrollbar */
         #portfolio-layer::-webkit-scrollbar { width: 8px; }
-        #portfolio-layer::-webkit-scrollbar-track { background: #0f172a; }
+        #portfolio-layer::-webkit-scrollbar-track { background: transparent; }
         #portfolio-layer::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 4px; }
 
         /* The Canvas for Particles */
@@ -316,7 +318,7 @@
                 <div class="inline-block border border-green-500 bg-green-500/10 px-3 py-1 rounded text-xs text-green-400 font-mono mb-4 tracking-widest">
                     SYSTEM UNLOCKED
                 </div>
-                <!-- 3. Typing Effect Target -->
+                <!-- Typing Effect Target -->
                 <h1 id="hero-title" class="text-6xl md:text-8xl font-bold mb-4 cyber-text glitch-effect typing-cursor">
                     <!-- Text injected via JS -->
                 </h1>
@@ -487,6 +489,8 @@
         
         /* --- 5. AUDIO SYSTEM (Synthesizer) --- */
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Jump Sound (Quick low beep)
         function playJumpSound() {
             if(audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator();
@@ -501,6 +505,53 @@
             osc.start();
             osc.stop(audioCtx.currentTime + 0.1);
         }
+
+        // Win Sound (Classic Melody)
+        function playWinSound() {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            const notes = [523.25, 659.25, 783.99, 1046.50]; // C E G C
+            const now = audioCtx.currentTime;
+            
+            notes.forEach((freq, i) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.value = freq;
+                
+                gain.gain.setValueAtTime(0.1, now + i * 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.1 + 0.2);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now + i * 0.1);
+                osc.stop(now + i * 0.1 + 0.3);
+            });
+        }
+
+        // Firework Explosion Sound (Noise Buffer)
+        function playExplosionSound() {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const bufferSize = audioCtx.sampleRate * 0.5; // 0.5 seconds
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buffer;
+            
+            const gain = audioCtx.createGain();
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            
+            noise.connect(gain);
+            gain.connect(audioCtx.destination);
+            noise.start();
+        }
+
 
         /* --- KONAMI CODE LISTENER --- */
         const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
@@ -525,6 +576,7 @@
         const gameContainer = document.getElementById('game-container');
         
         let gameRunning = false;
+        let gameWinSequence = false;
         let gameFrameId;
         
         // Game State
@@ -532,6 +584,12 @@
         const JUMP = -12;
         let scroll = 0;
         
+        // Firework System
+        let fireworkParticles = [];
+        
+        // Birds System
+        let birds = [];
+
         const hero = { x: 50, y: 0, w: 30, h: 30, dy: 0, grounded: false };
         const map = [
             {x: 400, w: 40, h: 40, t: 'box'},
@@ -545,7 +603,7 @@
         function resizeGame() {
             gameCanvas.width = window.innerWidth;
             gameCanvas.height = window.innerHeight;
-            if(!gameRunning) hero.y = gameCanvas.height - 60 - hero.h;
+            if(!gameRunning && !gameWinSequence) hero.y = gameCanvas.height - 60 - hero.h;
         }
         window.addEventListener('resize', resizeGame);
 
@@ -554,44 +612,105 @@
             hero.y = gameCanvas.height - 60 - hero.h;
             hero.dy = 0;
             gameRunning = true;
+            gameWinSequence = false;
+            fireworkParticles = [];
+            birds = [];
+            // Init birds
+            for(let i=0; i<5; i++) {
+                birds.push({
+                    x: Math.random() * window.innerWidth + window.innerWidth,
+                    y: Math.random() * 200 + 50,
+                    speed: Math.random() * 2 + 1
+                });
+            }
             resizeGame();
             gameLoop();
         }
+        
+        class Firework {
+            constructor(x, y, color) {
+                this.x = x; this.y = y;
+                this.size = Math.random() * 3 + 2;
+                this.color = color;
+                this.velocity = {
+                    x: (Math.random() - 0.5) * 6,
+                    y: (Math.random() - 0.5) * 6
+                };
+                this.life = 1.0;
+                this.decay = Math.random() * 0.02 + 0.01;
+            }
+            draw(ctx) {
+                ctx.globalAlpha = this.life;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1.0;
+            }
+            update() {
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+                this.life -= this.decay;
+            }
+        }
+
+        function spawnFirework(x, y) {
+            playExplosionSound();
+            const colors = ['#ef4444', '#f59e0b', '#3b82f6', '#10b981', '#ffffff'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            for(let i=0; i<20; i++) {
+                fireworkParticles.push(new Firework(x, y, color));
+            }
+        }
 
         function gameLoop() {
-            if (!gameRunning) return;
+            if (!gameRunning && !gameWinSequence) return;
 
-            // Update
-            scroll += 5;
-            hero.dy += GAME_GRAVITY;
-            hero.y += hero.dy;
-            
-            // Floor
-            if (hero.y + hero.h > gameCanvas.height - 60) {
-                hero.y = gameCanvas.height - 60 - hero.h;
-                hero.dy = 0;
-                hero.grounded = true;
-            } else {
-                hero.grounded = false;
+            if (gameRunning) {
+                // Update
+                scroll += 5;
+                hero.dy += GAME_GRAVITY;
+                hero.y += hero.dy;
+                
+                // Floor
+                if (hero.y + hero.h > gameCanvas.height - 60) {
+                    hero.y = gameCanvas.height - 60 - hero.h;
+                    hero.dy = 0;
+                    hero.grounded = true;
+                } else {
+                    hero.grounded = false;
+                }
+                
+                // Update Birds
+                birds.forEach(b => {
+                    b.x -= b.speed;
+                    if(b.x < -50) {
+                        b.x = gameCanvas.width + Math.random() * 500;
+                        b.y = Math.random() * 200 + 50;
+                    }
+                });
             }
 
-            // Collisions
             const screenGround = gameCanvas.height - 60;
-            map.forEach(obj => {
-                let ox = obj.x - scroll;
-                if (hero.x < ox + obj.w && hero.x + hero.w > ox &&
-                    hero.y + hero.h > screenGround - obj.h) {
-                    if (obj.t === 'spike') {
-                         scroll = 0; // Die
-                         hero.y = screenGround - hero.h;
-                    } else if (obj.t === 'box') {
-                         scroll = 0; // Die
-                    } else if (obj.t === 'flag') {
-                        gameRunning = false;
-                        unlockSite();
+
+            // Collisions (Only run if game is active)
+            if (gameRunning) {
+                map.forEach(obj => {
+                    let ox = obj.x - scroll;
+                    if (hero.x < ox + obj.w && hero.x + hero.w > ox &&
+                        hero.y + hero.h > screenGround - obj.h) {
+                        if (obj.t === 'spike') {
+                            scroll = 0; // Die
+                            hero.y = screenGround - hero.h;
+                        } else if (obj.t === 'box') {
+                            scroll = 0; // Die
+                        } else if (obj.t === 'flag') {
+                            // WIN DETECTED
+                            triggerWinSequence(obj, screenGround);
+                        }
                     }
-                }
-            });
+                });
+            }
 
             // Draw Sky (Background)
             gCtx.fillStyle = document.body.classList.contains('matrix-mode') ? '#000' : '#5c94fc';
@@ -607,6 +726,21 @@
                 gCtx.beginPath();
                 gCtx.arc(gameCanvas.width - 100, 80, 50, 0, Math.PI * 2);
                 gCtx.fill();
+                
+                // Draw Birds
+                gCtx.fillStyle = '#fff';
+                birds.forEach(b => {
+                    // Simple V shape
+                    gCtx.beginPath();
+                    // Use frame count to flap wings
+                    const flap = Math.sin(Date.now() / 100) * 5;
+                    gCtx.moveTo(b.x, b.y);
+                    gCtx.lineTo(b.x - 10, b.y - 5 + flap);
+                    gCtx.lineTo(b.x - 5, b.y);
+                    gCtx.lineTo(b.x + 5, b.y - 5 + flap);
+                    gCtx.lineTo(b.x, b.y);
+                    gCtx.fill();
+                });
 
                 // Draw Trees (Parallax Background)
                 const treeScroll = scroll * 0.5; 
@@ -681,7 +815,49 @@
                 gCtx.fillRect(px + 20, py + 20, 8, 5);
             }
 
+            // Render Fireworks (if winning)
+            if(gameWinSequence) {
+                 for(let i = fireworkParticles.length - 1; i >= 0; i--) {
+                    const p = fireworkParticles[i];
+                    p.update();
+                    p.draw(gCtx);
+                    if(p.life <= 0) fireworkParticles.splice(i, 1);
+                 }
+            }
+
             gameFrameId = requestAnimationFrame(gameLoop);
+        }
+        
+        function triggerWinSequence(flagObj, screenGround) {
+            gameRunning = false;
+            gameWinSequence = true;
+            playWinSound();
+            
+            // Calculate Height Score (1 to 6)
+            // Flag Top Y = screenGround - 200
+            // Flag Bottom Y = screenGround
+            // Hero Y is somewhere between. 
+            // Higher logic: (screenGround - hero.y) / 200
+            const flagHeight = 200;
+            const hitHeight = screenGround - hero.y; // Pixels from ground
+            const ratio = Math.min(Math.max(hitHeight / flagHeight, 0), 1);
+            
+            // Map 0.0-1.0 to 1-6 firecrackers
+            const numFirecrackers = Math.floor(ratio * 5) + 1;
+            
+            let count = 0;
+            const interval = setInterval(() => {
+                // Random position near flag
+                const fx = (flagObj.x - scroll) + (Math.random() - 0.5) * 200;
+                const fy = (screenGround - 200) + (Math.random() * 200);
+                spawnFirework(fx, fy);
+                
+                count++;
+                if(count >= numFirecrackers) {
+                    clearInterval(interval);
+                    setTimeout(unlockSite, 1500); // Wait after fireworks to unlock
+                }
+            }, 300);
         }
 
         // Input
@@ -694,13 +870,16 @@
         }
 
         window.addEventListener('keydown', e => {
+            if(!gameRunning) return;
             if((e.code === 'Space' || e.code === 'ArrowUp') && hero.grounded) handleJump();
         });
         window.addEventListener('touchstart', (e) => {
              e.preventDefault(); 
+             if(!gameRunning) return;
              if(hero.grounded) handleJump();
         }, {passive: false});
         window.addEventListener('mousedown', () => {
+             if(!gameRunning) return;
              if(hero.grounded) handleJump();
         });
 
@@ -713,7 +892,7 @@
            ========================================= */
         
         function unlockSite() {
-            gameRunning = false;
+            gameWinSequence = false;
             cancelAnimationFrame(gameFrameId);
             document.body.classList.add('site-active');
             initParticles();
