@@ -114,7 +114,8 @@
             justify-content: center;
             overflow-y: auto; 
             overflow-x: hidden;
-            pointer-events: none; 
+            pointer-events: none;
+            -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
         }
         
         /* Custom Scrollbar */
@@ -874,6 +875,9 @@
             if((e.code === 'Space' || e.code === 'ArrowUp') && hero.grounded) handleJump();
         });
         window.addEventListener('touchstart', (e) => {
+             // FIX: Allow scrolling if site is unlocked
+             if(document.body.classList.contains('site-active')) return;
+             
              e.preventDefault(); 
              if(!gameRunning) return;
              if(hero.grounded) handleJump();
