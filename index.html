@@ -4,18 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Naxxtra | Process Improvement Specialist</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         /* --- General Reset --- */
         :root {
-            --primary-color: #5c94fc; /* Mario Blue */
-            --accent-color: #3b82f6;
+            /* Changed from Mario Blue to Deep Cyberpunk Slate/Pink */
+            --primary-color: #0f172a; 
+            --accent-color: #ec4899;
             --text-color: white;
         }
 
@@ -36,11 +34,11 @@
             font-family: 'Rajdhani', sans-serif;
             user-select: none;
             
-            /* 1. CUSTOM ROCKET CURSOR */
+            /* CUSTOM ROCKET CURSOR */
             cursor: url("data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M13.1096 2.06733C13.2662 2.14923 13.3934 2.27646 13.4753 2.43306L20.4753 15.8151C20.7303 16.3026 20.5418 16.9044 20.0543 17.1594C19.9079 17.236 19.7441 17.2758 19.5789 17.2758H16.7368L18.6315 21.0652C18.8773 21.5568 18.678 22.1545 18.1864 22.4003C18.0267 22.4802 17.8488 22.5126 17.671 22.4942L11.9999 21.909L6.32884 22.4942C5.78167 22.5507 5.29525 22.1499 5.23881 21.6028C5.22047 21.4249 5.25287 21.2471 5.33272 21.0874L7.22736 17.2758H4.38526C3.83297 17.2758 3.38526 16.8281 3.38526 16.2758C3.38526 16.1106 3.42503 15.9468 3.50162 15.8004L10.5016 2.43306C10.7566 1.94559 11.3584 1.75711 11.8459 2.01211C12.0025 2.09401 12.1297 2.22124 12.2116 2.37784L11.8053 2.16522L11.9778 2.075H12.0221L13.1096 2.06733Z' fill='white' stroke='black' stroke-width='1.5'/%3E%3C/svg%3E") 0 0, auto;
         }
 
-        /* --- 2. CRT SCANLINE EFFECT --- */
+        /* --- CRT SCANLINE EFFECT --- */
         .scanlines {
             position: fixed;
             top: 0;
@@ -55,7 +53,7 @@
                 rgba(0,0,0,0.1)
             );
             background-size: 100% 4px;
-            z-index: 999; /* Topmost */
+            z-index: 999;
             pointer-events: none;
             opacity: 0.6;
             animation: flicker 0.15s infinite;
@@ -74,7 +72,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 100; /* Top layer */
+            z-index: 100;
             background-color: var(--primary-color);
             transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1);
         }
@@ -115,7 +113,7 @@
             overflow-y: auto; 
             overflow-x: hidden;
             pointer-events: none;
-            -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
+            -webkit-overflow-scrolling: touch;
         }
         
         /* Custom Scrollbar */
@@ -195,7 +193,7 @@
             position: absolute;
             left: -6px; top: 5px;
             width: 10px; height: 10px;
-            background: var(--accent-color);
+            background: #3b82f6;
             border-radius: 50%;
         }
 
@@ -211,7 +209,17 @@
             margin-bottom: 5px;
             font-family: 'Press Start 2P', cursive;
             font-size: 8px;
+            transition: all 0.3s ease;
+            cursor: crosshair;
         }
+        /* Hover Effect for Tags */
+        .tech-tag:hover {
+            background: rgba(236, 72, 153, 0.2);
+            color: #ec4899;
+            border-color: #ec4899;
+            transform: scale(1.05);
+        }
+
         body.matrix-mode .tech-tag {
             color: #0f0;
             background: rgba(0,255,0,0.1);
@@ -244,8 +252,8 @@
         }
         .social-card:hover {
             transform: translateY(-2px);
-            border-color: #38bdf8;
-            background: rgba(56, 189, 248, 0.15);
+            border-color: #ec4899;
+            background: rgba(236, 72, 153, 0.15);
             color: white;
         }
 
@@ -286,46 +294,40 @@
 </head>
 <body>
     
-    <!-- CRT Overlay -->
     <div class="scanlines"></div>
 
-    <!-- === 1. RETRO GAME INTRO LAYER === -->
     <div id="game-container">
+        <button id="bypass-btn" class="absolute top-4 right-4 z-[200] font-mono text-[10px] md:text-xs text-gray-400 hover:text-green-400 border border-gray-600 hover:border-green-400 px-3 py-1 bg-black/50 rounded transition-all cursor-pointer">
+            >_ BYPASS_FIREWALL
+        </button>
+
         <canvas id="game-canvas"></canvas>
         <div class="game-ui" style="top: 40%;">
-            <p class="text-xs md:text-sm text-yellow-300 animate-pulse">REACH THE FLAG TO ENTER</p>
+            <p class="text-xs md:text-sm text-pink-400 animate-pulse">REACH THE FLAG TO ENTER</p>
         </div>
         <div class="game-ui" style="bottom: 20px;">
             <p class="text-[10px] text-white opacity-80">SPACE / TAP TO JUMP</p>
         </div>
     </div>
 
-    <!-- === 2. INTERACTIVE PORTFOLIO LAYER === -->
     <div id="portfolio-layer">
         
-        <!-- Canvas for Particles (Fixed Background) -->
         <canvas id="particle-canvas"></canvas>
 
-        <!-- Magnet Gravity Button -->
         <button id="gravity-btn" title="Toggle Gravity">
             <i class="fa-solid fa-magnet text-xl"></i>
         </button>
 
-        <!-- Main Content -->
         <div id="content-container">
             
-            <!-- Header -->
             <header class="text-center mb-16 mt-10">
                 <div class="inline-block border border-green-500 bg-green-500/10 px-3 py-1 rounded text-xs text-green-400 font-mono mb-4 tracking-widest">
                     SYSTEM UNLOCKED
                 </div>
-                <!-- Typing Effect Target -->
                 <h1 id="hero-title" class="text-6xl md:text-8xl font-bold mb-4 cyber-text glitch-effect typing-cursor">
-                    <!-- Text injected via JS -->
-                </h1>
+                    </h1>
                 <p id="hero-subtitle" class="text-xl md:text-2xl text-blue-300 font-light tracking-widest">
-                    <!-- Text injected via JS -->
-                </p>
+                    </p>
                 <div class="flex flex-wrap justify-center gap-2 mt-4 text-gray-400 text-sm">
                     <span><i class="fa-solid fa-location-dot mr-2"></i>London, UK</span>
                     <span class="mx-2">|</span>
@@ -335,7 +337,6 @@
                 </div>
             </header>
 
-            <!-- About Section -->
             <div class="cyber-card">
                 <h3 class="text-xl font-bold mb-4 text-purple-400 font-mono"><i class="fa-solid fa-user-astronaut mr-2"></i>PROFILE_SUMMARY</h3>
                 <p class="text-gray-300 leading-relaxed mb-4">
@@ -346,7 +347,6 @@
                 </p>
             </div>
 
-            <!-- Experience Section -->
             <div class="cyber-card">
                 <h3 class="text-xl font-bold mb-6 text-blue-400 font-mono"><i class="fa-solid fa-briefcase mr-2"></i>MISSION_LOGS (EXPERIENCE)</h3>
                 
@@ -392,10 +392,8 @@
                 </div>
             </div>
 
-            <!-- Skills & Education Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
-                <!-- Education -->
                 <div class="cyber-card">
                     <h3 class="text-xl font-bold mb-4 text-green-400 font-mono"><i class="fa-solid fa-graduation-cap mr-2"></i>TRAINING</h3>
                     
@@ -412,7 +410,6 @@
                     </div>
                 </div>
 
-                <!-- Skills -->
                 <div class="cyber-card">
                     <h3 class="text-xl font-bold mb-4 text-yellow-400 font-mono"><i class="fa-solid fa-microchip mr-2"></i>STATS & SKILLS</h3>
                     
@@ -440,7 +437,6 @@
                 </div>
             </div>
 
-            <!-- Social Links -->
             <h3 class="text-center text-gray-500 font-mono text-xs mb-4 mt-8">ESTABLISH_UPLINK</h3>
             <div class="social-grid">
                 <a href="mailto:nakshatrapardeshi@gmail.com" class="social-card">
@@ -484,14 +480,13 @@
         </div>
     </div>
 
-    <!-- === SCRIPTS === -->
     <script>
     (function() { // Start IIFE
         
-        /* --- 5. AUDIO SYSTEM (Synthesizer) --- */
+        /* --- AUDIO SYSTEM (Synthesizer) --- */
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         
-        // Jump Sound (Quick low beep)
+        // Jump Sound
         function playJumpSound() {
             if(audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator();
@@ -507,7 +502,7 @@
             osc.stop(audioCtx.currentTime + 0.1);
         }
 
-        // Win Sound (Classic Melody)
+        // Win Sound
         function playWinSound() {
             if(audioCtx.state === 'suspended') audioCtx.resume();
             const notes = [523.25, 659.25, 783.99, 1046.50]; // C E G C
@@ -529,7 +524,7 @@
             });
         }
 
-        // Firework Explosion Sound (Noise Buffer)
+        // Explosion Sound
         function playExplosionSound() {
             if(audioCtx.state === 'suspended') audioCtx.resume();
             
@@ -552,7 +547,6 @@
             gain.connect(audioCtx.destination);
             noise.start();
         }
-
 
         /* --- KONAMI CODE LISTENER --- */
         const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
@@ -585,10 +579,8 @@
         const JUMP = -12;
         let scroll = 0;
         
-        // Firework System
+        // Systems
         let fireworkParticles = [];
-        
-        // Birds System
         let birds = [];
 
         const hero = { x: 50, y: 0, w: 30, h: 30, dy: 0, grounded: false };
@@ -600,6 +592,15 @@
             {x: 1440, w: 30, h: 30, t: 'spike'},
             {x: 2000, w: 10, h: 200, t: 'flag'} // Finish
         ];
+
+        /* --- BYPASS FIREWALL --- */
+        document.getElementById('bypass-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if(!gameWinSequence && gameRunning) {
+                playWinSound();
+                unlockSite();
+            }
+        });
 
         function resizeGame() {
             gameCanvas.width = window.innerWidth;
@@ -616,7 +617,7 @@
             gameWinSequence = false;
             fireworkParticles = [];
             birds = [];
-            // Init birds
+            
             for(let i=0; i<5; i++) {
                 birds.push({
                     x: Math.random() * window.innerWidth + window.innerWidth,
@@ -657,7 +658,7 @@
 
         function spawnFirework(x, y) {
             playExplosionSound();
-            const colors = ['#ef4444', '#f59e0b', '#3b82f6', '#10b981', '#ffffff'];
+            const colors = ['#ec4899', '#f59e0b', '#38bdf8', '#10b981', '#ffffff'];
             const color = colors[Math.floor(Math.random() * colors.length)];
             for(let i=0; i<20; i++) {
                 fireworkParticles.push(new Firework(x, y, color));
@@ -668,12 +669,12 @@
             if (!gameRunning && !gameWinSequence) return;
 
             if (gameRunning) {
-                // Update
+                // Update Physics
                 scroll += 5;
                 hero.dy += GAME_GRAVITY;
                 hero.y += hero.dy;
                 
-                // Floor
+                // Floor Collision
                 if (hero.y + hero.h > gameCanvas.height - 60) {
                     hero.y = gameCanvas.height - 60 - hero.h;
                     hero.dy = 0;
@@ -694,7 +695,7 @@
 
             const screenGround = gameCanvas.height - 60;
 
-            // Collisions (Only run if game is active)
+            // Object Collisions
             if (gameRunning) {
                 map.forEach(obj => {
                     let ox = obj.x - scroll;
@@ -706,34 +707,31 @@
                         } else if (obj.t === 'box') {
                             scroll = 0; // Die
                         } else if (obj.t === 'flag') {
-                            // WIN DETECTED
                             triggerWinSequence(obj, screenGround);
                         }
                     }
                 });
             }
 
-            // Draw Sky (Background)
-            gCtx.fillStyle = document.body.classList.contains('matrix-mode') ? '#000' : '#5c94fc';
+            // Draw Sky (Cyberpunk Night Theme)
+            gCtx.fillStyle = document.body.classList.contains('matrix-mode') ? '#000' : '#0f172a';
             gCtx.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
 
             if(!document.body.classList.contains('matrix-mode')) {
-                // Draw Sun
-                gCtx.fillStyle = '#FDB813';
+                // Draw Neon Moon
+                gCtx.fillStyle = '#ec4899';
                 gCtx.beginPath();
-                gCtx.arc(gameCanvas.width - 100, 80, 40, 0, Math.PI * 2);
+                gCtx.arc(gameCanvas.width - 100, 100, 40, 0, Math.PI * 2);
                 gCtx.fill();
-                gCtx.fillStyle = 'rgba(253, 184, 19, 0.3)';
+                gCtx.fillStyle = 'rgba(236, 72, 153, 0.2)';
                 gCtx.beginPath();
-                gCtx.arc(gameCanvas.width - 100, 80, 50, 0, Math.PI * 2);
+                gCtx.arc(gameCanvas.width - 100, 100, 60, 0, Math.PI * 2);
                 gCtx.fill();
                 
                 // Draw Birds
-                gCtx.fillStyle = '#fff';
+                gCtx.fillStyle = '#38bdf8';
                 birds.forEach(b => {
-                    // Simple V shape
                     gCtx.beginPath();
-                    // Use frame count to flap wings
                     const flap = Math.sin(Date.now() / 100) * 5;
                     gCtx.moveTo(b.x, b.y);
                     gCtx.lineTo(b.x - 10, b.y - 5 + flap);
@@ -743,24 +741,23 @@
                     gCtx.fill();
                 });
 
-                // Draw Trees (Parallax Background)
+                // Draw Trees (Darkened for Cyber Theme)
                 const treeScroll = scroll * 0.5; 
                 for(let i = 0; i < 40; i++) {
                     let tx = (i * 300) - treeScroll;
                     if(tx > -100 && tx < gameCanvas.width) {
                         const groundY = gameCanvas.height - 60;
-                        gCtx.fillStyle = '#7c2d12'; 
+                        gCtx.fillStyle = '#0f172a'; 
                         gCtx.fillRect(tx + 15, groundY - 60, 20, 60);
-                        gCtx.fillStyle = '#166534'; 
+                        gCtx.fillStyle = '#1e293b'; 
                         gCtx.fillRect(tx, groundY - 100, 50, 40); 
-                        gCtx.fillStyle = '#15803d'; 
+                        gCtx.fillStyle = '#334155'; 
                         gCtx.fillRect(tx + 5, groundY - 120, 40, 30); 
-                        gCtx.fillStyle = '#22c55e'; 
+                        gCtx.fillStyle = '#475569'; 
                         gCtx.fillRect(tx + 10, groundY - 130, 30, 20); 
                     }
                 }
             } else {
-                // Matrix Mode Background
                 gCtx.fillStyle = '#0f0';
                 gCtx.font = '14px monospace';
                 for(let i=0; i<20; i++) {
@@ -768,11 +765,11 @@
                 }
             }
 
-            // Floor
-            gCtx.fillStyle = document.body.classList.contains('matrix-mode') ? '#001100' : '#5D4037';
+            // Floor (Neon Grid Edge)
+            gCtx.fillStyle = document.body.classList.contains('matrix-mode') ? '#001100' : '#020617';
             gCtx.fillRect(0, gameCanvas.height - 60, gameCanvas.width, 60);
-            gCtx.fillStyle = document.body.classList.contains('matrix-mode') ? '#0f0' : '#4CAF50';
-            gCtx.fillRect(0, gameCanvas.height - 60, gameCanvas.width, 10);
+            gCtx.fillStyle = document.body.classList.contains('matrix-mode') ? '#0f0' : '#38bdf8';
+            gCtx.fillRect(0, gameCanvas.height - 60, gameCanvas.width, 4);
 
             // Objects
             map.forEach(obj => {
@@ -790,7 +787,7 @@
                         gCtx.fill();
                     } else if(obj.t === 'flag') {
                         gCtx.fillStyle = '#fff'; gCtx.fillRect(ox, screenGround - 200, 5, 200);
-                        gCtx.fillStyle = 'red'; gCtx.fillRect(ox+5, screenGround-200, 40, 30);
+                        gCtx.fillStyle = '#ec4899'; gCtx.fillRect(ox+5, screenGround-200, 40, 30);
                     }
                 }
             });
@@ -807,16 +804,16 @@
             // Legs running animation
             if(hero.grounded) {
                 const leg = Math.sin(scroll * 0.2) * 5;
-                gCtx.fillStyle = '#451a03'; // Shoes
+                gCtx.fillStyle = '#451a03'; 
                 gCtx.fillRect(px + 5 - leg, py + 25, 8, 5);
                 gCtx.fillRect(px + 15 + leg, py + 25, 8, 5);
             } else {
-                gCtx.fillStyle = '#451a03'; // Jump Shoes
+                gCtx.fillStyle = '#451a03'; 
                 gCtx.fillRect(px + 2, py + 25, 8, 5);
                 gCtx.fillRect(px + 20, py + 20, 8, 5);
             }
 
-            // Render Fireworks (if winning)
+            // Render Fireworks
             if(gameWinSequence) {
                  for(let i = fireworkParticles.length - 1; i >= 0; i--) {
                     const p = fireworkParticles[i];
@@ -834,21 +831,14 @@
             gameWinSequence = true;
             playWinSound();
             
-            // Calculate Height Score (1 to 6)
-            // Flag Top Y = screenGround - 200
-            // Flag Bottom Y = screenGround
-            // Hero Y is somewhere between. 
-            // Higher logic: (screenGround - hero.y) / 200
             const flagHeight = 200;
-            const hitHeight = screenGround - hero.y; // Pixels from ground
+            const hitHeight = screenGround - hero.y; 
             const ratio = Math.min(Math.max(hitHeight / flagHeight, 0), 1);
             
-            // Map 0.0-1.0 to 1-6 firecrackers
             const numFirecrackers = Math.floor(ratio * 5) + 1;
             
             let count = 0;
             const interval = setInterval(() => {
-                // Random position near flag
                 const fx = (flagObj.x - scroll) + (Math.random() - 0.5) * 200;
                 const fy = (screenGround - 200) + (Math.random() * 200);
                 spawnFirework(fx, fy);
@@ -856,14 +846,14 @@
                 count++;
                 if(count >= numFirecrackers) {
                     clearInterval(interval);
-                    setTimeout(unlockSite, 1500); // Wait after fireworks to unlock
+                    setTimeout(unlockSite, 1500); 
                 }
             }, 300);
         }
 
         // Input
         function handleJump() {
-            if(hero.grounded) { 
+            if(hero.grounded || hero.y > (gameCanvas.height - 60 - hero.h - 15)) { 
                 hero.dy = JUMP; 
                 hero.grounded = false; 
                 playJumpSound();
@@ -874,17 +864,23 @@
             if(!gameRunning) return;
             if((e.code === 'Space' || e.code === 'ArrowUp') && hero.grounded) handleJump();
         });
+        
+        // Mobile touch fix (Ignore UI buttons, add tolerance)
         window.addEventListener('touchstart', (e) => {
-             // FIX: Allow scrolling if site is unlocked
              if(document.body.classList.contains('site-active')) return;
+             if(e.target.id === 'bypass-btn') return; 
              
              e.preventDefault(); 
              if(!gameRunning) return;
-             if(hero.grounded) handleJump();
+             handleJump(); 
         }, {passive: false});
-        window.addEventListener('mousedown', () => {
+
+        window.addEventListener('mousedown', (e) => {
+             if(document.body.classList.contains('site-active')) return;
+             if(e.target.id === 'bypass-btn') return;
+             
              if(!gameRunning) return;
-             if(hero.grounded) handleJump();
+             handleJump(); 
         });
 
         // Start Game
@@ -897,10 +893,11 @@
         
         function unlockSite() {
             gameWinSequence = false;
+            gameRunning = false;
             cancelAnimationFrame(gameFrameId);
             document.body.classList.add('site-active');
             initParticles();
-            typeWriterEffect(); // Trigger typing
+            typeWriterEffect(); 
         }
 
         // --- TYPING EFFECT ---
@@ -917,8 +914,8 @@
                     i++;
                     setTimeout(typeTitle, 150);
                 } else {
-                    titleEl.classList.remove('typing-cursor'); // Stop blink on title
-                    subEl.classList.add('typing-cursor'); // Start blink on sub
+                    titleEl.classList.remove('typing-cursor');
+                    subEl.classList.add('typing-cursor');
                     let j = 0;
                     function typeSub() {
                         if (j < subText.length) {
@@ -958,7 +955,7 @@
                 this.size = Math.random() * 3 + 1;
                 this.density = (Math.random() * 30) + 1;
                 this.vx = 0; this.vy = 0;
-                this.color = Math.random() > 0.5 ? '#38bdf8' : '#818cf8';
+                this.color = Math.random() > 0.5 ? '#38bdf8' : '#ec4899'; // Cyan and Pink particles
             }
             draw() {
                 pCtx.fillStyle = document.body.classList.contains('matrix-mode') ? '#0f0' : this.color;
@@ -1045,6 +1042,17 @@
         window.addEventListener('resize', () => {
             pCanvas.width = window.innerWidth; pCanvas.height = window.innerHeight;
             pCanvas.style.height = window.innerHeight + 'px';
+        });
+
+        // --- Tech Tag Interactive Shockwave ---
+        const tags = document.querySelectorAll('.tech-tag');
+        tags.forEach(tag => {
+            tag.addEventListener('mouseenter', () => {
+                mouse.x = window.innerWidth / 2;
+                mouse.y = window.innerHeight / 2;
+                shockwave = 300; 
+                setTimeout(() => shockwave = 0, 800);
+            });
         });
 
     })(); // End IIFE
