@@ -1,0 +1,26 @@
+# Node / Capacitor
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Generated Android project outputs
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
+
+# Generated icon/splash PNGs; recreate with: npm run assets:create
+assets/*.png
+
+# Android signing secrets - never commit these
+*.jks
+*.keystore
+key.properties
+release-signing.properties
+
+# OS/editor files
+.DS_Store
+.vscode/
+.idea/
