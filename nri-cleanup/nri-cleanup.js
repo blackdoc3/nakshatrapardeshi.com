@@ -5,6 +5,8 @@ const form = document.querySelector('#nri-intake-form');
 const resultCard = document.querySelector('#result-card');
 const scoreValue = document.querySelector('#score-value');
 const scoreGauge = document.querySelector('#score-gauge');
+const scoreDashboard = document.querySelector('.score-dashboard');
+const scoreLegend = document.querySelector('.score-legend');
 const scoreBand = document.querySelector('#score-band');
 const recommendedProduct = document.querySelector('#recommended-product');
 const safeExplanation = document.querySelector('#safe-explanation');
@@ -214,12 +216,35 @@ function getBandColor(score) {
   return '#c0392b';
 }
 
+function initialiseScoreSafetyCopy() {
+  if (scoreDashboard && !document.querySelector('.score-safety-note')) {
+    const note = document.createElement('p');
+    note.className = 'privacy-note score-safety-note';
+    note.textContent = 'Based only on your answers. This is an admin complexity score only. It is not tax, legal, investment, accounting, financial, or compliance advice.';
+    scoreDashboard.insertAdjacentElement('afterend', note);
+  }
+
+  if (scoreLegend) {
+    const labels = [
+      '0–25 Low admin complexity',
+      '26–50 Moderate admin complexity',
+      '51–75 High admin complexity',
+      '76–100 Very high admin complexity',
+    ];
+
+    scoreLegend.querySelectorAll('span').forEach((span, index) => {
+      const icon = span.querySelector('i');
+      span.replaceChildren(icon, document.createTextNode(labels[index] || ''));
+    });
+  }
+}
+
 function updateScoreGauge(score, band) {
   if (!scoreGauge) return;
   const angle = Math.max(0, Math.min(score, 100)) * 3.6;
   scoreGauge.style.setProperty('--score-angle', `${angle}deg`);
   scoreGauge.style.setProperty('--score-color', getBandColor(score));
-  scoreGauge.setAttribute('aria-label', `NRI Money Mess Score ${score} out of 100. ${band}.`);
+  scoreGauge.setAttribute('aria-label', `Money Mess Score ${score} out of 100. ${band}. Based only on your answers. Admin complexity score only.`);
 }
 
 function getRecommendedProduct(score) {
@@ -291,6 +316,7 @@ form.addEventListener('change', () => {
   clearFormError();
 });
 
+initialiseScoreSafetyCopy();
 updateConditionalFields();
 
 form.addEventListener('submit', (event) => {
