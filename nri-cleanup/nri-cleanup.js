@@ -1,5 +1,5 @@
 const OWNER_EMAIL = 'nakshatrapardeshi@gmail.com';
-const OWNER_WHATSAPP = '[PASTE_WHATSAPP_NUMBER_WITH_COUNTRY_CODE]';
+const OWNER_WHATSAPP = '919881553633';
 
 const form = document.querySelector('#nri-intake-form');
 const resultCard = document.querySelector('#result-card');
