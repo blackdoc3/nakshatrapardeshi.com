@@ -3,7 +3,7 @@
   "appName": "NRI Cleanup Desk",
   "webDir": "android-wrapper/www",
   "server": {
-    "url": "https://www.nakshatrapardeshi.com/nri-cleanup/",
+    "url": "https://www.nakshatrapardeshi.com/nri-cleanup/?app=android",
     "cleartext": false,
     "allowNavigation": [
       "www.nakshatrapardeshi.com"
