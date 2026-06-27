@@ -17,6 +17,8 @@ const formError = document.createElement('div');
 formError.className = 'form-error';
 formError.setAttribute('role', 'alert');
 formError.setAttribute('aria-live', 'polite');
+formError.hidden = true;
+formError.style.cssText = 'margin:0 0 1rem;padding:1rem;border:1px solid rgba(200,132,47,.45);border-radius:16px;background:#fff3d6;color:#6a4616;font-weight:700;';
 form.prepend(formError);
 
 const accountTypeField = form.querySelector('input[name="account_types"]')?.closest('.field');
@@ -86,7 +88,7 @@ function clearCheckboxGroup(name) {
 function updateConditionalFields() {
   if (accountTypeField) {
     const showAccountTypes = isAccountTypeVisible();
-    accountTypeField.classList.toggle('is-hidden', !showAccountTypes);
+    accountTypeField.hidden = !showAccountTypes;
     accountTypeField.setAttribute('aria-hidden', String(!showAccountTypes));
 
     if (!showAccountTypes) {
@@ -96,7 +98,7 @@ function updateConditionalFields() {
 
   if (dematConversionField) {
     const showDematConversion = shouldShowDematConversion();
-    dematConversionField.classList.toggle('is-hidden', !showDematConversion);
+    dematConversionField.hidden = !showDematConversion;
     dematConversionField.setAttribute('aria-hidden', String(!showDematConversion));
 
     form.querySelectorAll('input[name="demat_conversion"]').forEach((input) => {
@@ -113,13 +115,13 @@ function updateConditionalFields() {
 
 function showFormError(message) {
   formError.textContent = message;
-  formError.classList.add('visible');
+  formError.hidden = false;
   formError.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function clearFormError() {
   formError.textContent = '';
-  formError.classList.remove('visible');
+  formError.hidden = true;
 }
 
 function validateCustomGroups() {
