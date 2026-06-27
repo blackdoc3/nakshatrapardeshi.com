@@ -11,6 +11,7 @@ on:
     paths:
       - "package.json"
       - "capacitor.config.json"
+      - "nri-cleanup/**"
       - "android-wrapper/**"
       - "assets/**"
       - "scripts/**"
