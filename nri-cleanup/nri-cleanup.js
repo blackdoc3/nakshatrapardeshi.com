@@ -4,6 +4,9 @@ const OWNER_WHATSAPP = '919881553633';
 const form = document.querySelector('#nri-intake-form');
 const resultCard = document.querySelector('#result-card');
 const scoreValue = document.querySelector('#score-value');
+const scoreGauge = document.querySelector('#score-gauge');
+const scoreDashboard = document.querySelector('.score-dashboard');
+const scoreLegend = document.querySelector('.score-legend');
 const scoreBand = document.querySelector('#score-band');
 const recommendedProduct = document.querySelector('#recommended-product');
 const safeExplanation = document.querySelector('#safe-explanation');
@@ -206,6 +209,44 @@ function getBand(score) {
   return 'Very high admin complexity';
 }
 
+function getBandColor(score) {
+  if (score <= 25) return '#2f9e44';
+  if (score <= 50) return '#d6a329';
+  if (score <= 75) return '#e67e22';
+  return '#c0392b';
+}
+
+function initialiseScoreSafetyCopy() {
+  if (scoreDashboard && !document.querySelector('.score-safety-note')) {
+    const note = document.createElement('p');
+    note.className = 'privacy-note score-safety-note';
+    note.textContent = 'Based only on your answers. This is an admin complexity score only. It is not tax, legal, investment, accounting, financial, or compliance advice.';
+    scoreDashboard.insertAdjacentElement('afterend', note);
+  }
+
+  if (scoreLegend) {
+    const labels = [
+      '0–25 Low admin complexity',
+      '26–50 Moderate admin complexity',
+      '51–75 High admin complexity',
+      '76–100 Very high admin complexity',
+    ];
+
+    scoreLegend.querySelectorAll('span').forEach((span, index) => {
+      const icon = span.querySelector('i');
+      span.replaceChildren(icon, document.createTextNode(labels[index] || ''));
+    });
+  }
+}
+
+function updateScoreGauge(score, band) {
+  if (!scoreGauge) return;
+  const angle = Math.max(0, Math.min(score, 100)) * 3.6;
+  scoreGauge.style.setProperty('--score-angle', `${angle}deg`);
+  scoreGauge.style.setProperty('--score-color', getBandColor(score));
+  scoreGauge.setAttribute('aria-label', `Money Mess Score ${score} out of 100. ${band}. Based only on your answers. Admin complexity score only.`);
+}
+
 function getRecommendedProduct(score) {
   if (score <= 25) return 'Free NRI Money Mess Score';
   if (score <= 50) return '£20 Beta Mini Cleanup';
@@ -275,6 +316,7 @@ form.addEventListener('change', () => {
   clearFormError();
 });
 
+initialiseScoreSafetyCopy();
 updateConditionalFields();
 
 form.addEventListener('submit', (event) => {
@@ -296,7 +338,8 @@ form.addEventListener('submit', (event) => {
   const summary = buildSummary(score, band, product, explanation);
   const whatsappSummary = buildWhatsAppSummary(score, band, product);
 
-  scoreValue.textContent = `${score}/100`;
+  scoreValue.textContent = score;
+  updateScoreGauge(score, band);
   scoreBand.textContent = band;
   recommendedProduct.textContent = product;
   safeExplanation.textContent = explanation;
