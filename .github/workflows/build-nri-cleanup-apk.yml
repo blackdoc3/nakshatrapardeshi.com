@@ -1,0 +1,84 @@
+name: Build NRI Cleanup Desk Debug APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/nri-cleanup-android-apk
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "package.json"
+      - "capacitor.config.json"
+      - "android-wrapper/**"
+      - "assets/**"
+      - "scripts/**"
+      - ".github/workflows/build-nri-cleanup-apk.yml"
+
+permissions:
+  contents: read
+
+env:
+  APK_PATH: android/app/build/outputs/apk/debug/app-debug.apk
+
+jobs:
+  build-debug-apk:
+    name: Build debug APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Set up Java for Android build
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install npm dependencies
+        run: npm install
+
+      - name: Generate NC icon and splash source assets
+        run: npm run assets:create
+
+      - name: Generate Android project with Capacitor
+        run: |
+          if [ ! -d android ]; then
+            npx cap add android
+          fi
+
+      - name: Generate Android launcher icon and splash assets
+        run: npm run assets:generate
+
+      - name: Sync Capacitor Android project
+        run: npx cap sync android
+
+      - name: Build debug APK
+        run: |
+          cd android
+          chmod +x ./gradlew
+          ./gradlew assembleDebug
+
+      - name: Confirm debug APK exists
+        run: |
+          test -f "$APK_PATH"
+          ls -lh "$APK_PATH"
+
+      - name: Upload debug APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nri-cleanup-desk-debug-apk
+          path: ${{ env.APK_PATH }}
+          if-no-files-found: error
+          retention-days: 30
