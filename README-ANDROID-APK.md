@@ -1,12 +1,10 @@
 # NRI Cleanup Desk Android APK MVP
 
-This folder setup creates a simple Android APK MVP for **NRI Cleanup Desk**.
+This setup creates a simple Android APK MVP for **NRI Cleanup Desk**.
 
 It is intentionally a wrapper app, not a full native Android rebuild.
 
-## A. What this APK project does
-
-The Android app opens the live NRI Cleanup Desk page:
+The app opens the live NRI Cleanup Desk page:
 
 ```text
 https://www.nakshatrapardeshi.com/nri-cleanup/
@@ -39,7 +37,7 @@ This APK does **not** add:
 - US/global support
 - investment/tax/legal/accounting/financial advice features
 
-The app must remain UK-focused and admin-support only.
+The app remains UK-focused and admin-support only.
 
 The existing page boundaries are preserved:
 
@@ -55,380 +53,252 @@ The existing page boundaries are preserved:
 - Money Mess Score is admin complexity score only
 - No passwords, OTPs, card numbers, Aadhaar OTPs, account numbers, login details, or document uploads
 
-## B. What tools you need to install
+## How the APK is built automatically
 
-Install these once on your laptop:
+The GitHub Actions workflow is here:
 
-1. **Git**
-   - Needed to download the repo and switch to the APK branch.
-
-2. **Node.js LTS**
-   - Needed for Capacitor commands.
-   - After installing, check it works:
-
-```bash
-node --version
-npm --version
+```text
+.github/workflows/build-nri-cleanup-apk.yml
 ```
 
-3. **Android Studio**
-   - Needed to sync Gradle, build the APK, and later create a signed release APK/AAB.
-   - When Android Studio opens, allow it to install the Android SDK and required build tools.
+It builds a debug APK automatically when:
 
-You do **not** need Google Play Console for your own testing.
+- code is pushed to `codex/nri-cleanup-android-apk`
+- the workflow is run manually from GitHub Actions
+- the draft PR is updated
 
-## C. Exact beginner steps to build the debug APK
+The workflow:
 
-### 1. Clone the repo
+1. checks out the repo
+2. sets up Node.js
+3. sets up Java for Android
+4. sets up Android SDK
+5. installs npm dependencies
+6. generates the simple `NC` icon/splash source assets
+7. generates the Android project with Capacitor
+8. generates Android launcher icon/splash assets
+9. syncs Capacitor Android
+10. builds the debug APK
+11. uploads the APK as a GitHub Actions artifact
 
-```bash
-git clone https://github.com/blackdoc3/nakshatrapardeshi.com.git
-cd nakshatrapardeshi.com
+Artifact name:
+
+```text
+nri-cleanup-desk-debug-apk
 ```
 
-### 2. Switch to this APK branch
+APK path inside the artifact:
 
-```bash
-git checkout codex/nri-cleanup-android-apk
+```text
+app-debug.apk
 ```
 
-### 3. Install npm dependencies
-
-```bash
-npm install
-```
-
-### 4. Create the simple NC icon and splash source assets
-
-```bash
-npm run assets:create
-```
-
-This creates PNG files inside `assets/`.
-
-### 5. Generate the Android project
-
-```bash
-npm run cap:add:android
-```
-
-This creates an `android/` folder.
-
-If Android already exists, do not run this again. Use:
-
-```bash
-npm run cap:sync
-```
-
-### 6. Generate the Android launcher icon and splash assets
-
-```bash
-npm run assets:generate
-```
-
-### 7. Sync Capacitor to Android
-
-```bash
-npm run cap:sync
-```
-
-### 8. Open the Android project
-
-```bash
-npm run cap:open
-```
-
-This opens Android Studio.
-
-### 9. In Android Studio, sync Gradle
-
-When Android Studio opens:
-
-1. Wait for the project to load.
-2. If you see a blue bar or prompt saying **Sync Now**, click **Sync Now**.
-3. Wait until the sync finishes.
-4. If Android Studio asks to install missing SDK/build tools, click **Install** or **Accept**.
-
-### 10. Build a debug APK from Android Studio
-
-In Android Studio:
-
-1. Click **Build** in the top menu.
-2. Click **Build Bundle(s) / APK(s)**.
-3. Click **Build APK(s)**.
-4. Wait for the build to finish.
-5. Click the notification that says **APK(s) generated successfully**.
-6. Click **Locate**.
-
-The debug APK should be here:
+Original build path in CI:
 
 ```text
 android/app/build/outputs/apk/debug/app-debug.apk
 ```
 
-### Optional terminal build
+## How to download the APK from GitHub Actions
 
-After Android has been generated and synced, you can also try:
+Use this when you want the actual APK file without building anything on your laptop.
 
-```bash
-npm run android:debug
-```
-
-The APK path is still:
+1. Go to the GitHub repo:
 
 ```text
-android/app/build/outputs/apk/debug/app-debug.apk
+https://github.com/blackdoc3/nakshatrapardeshi.com
 ```
 
-## D. Exact beginner steps to install APK on your Android phone
+2. Open the **Actions** tab.
 
-1. Find this file on your laptop:
+3. Click the latest workflow run named:
 
 ```text
-android/app/build/outputs/apk/debug/app-debug.apk
+Build NRI Cleanup Desk Debug APK
 ```
 
-2. Transfer it to your Android phone using one of these:
-   - USB cable
-   - Google Drive
-   - email to yourself
-   - nearby share
+4. Make sure the run has a green tick / successful status.
 
-3. On your Android phone, tap the APK file.
+5. Scroll down to **Artifacts**.
 
-4. Android may say installation from this source is not allowed. This is normal for a debug APK.
+6. Download:
 
-5. Tap **Settings**.
+```text
+nri-cleanup-desk-debug-apk
+```
 
-6. Turn on **Allow from this source** for the app you used to open the APK, for example Files, Chrome, Gmail, or Drive.
+7. GitHub will usually download it as a ZIP file.
 
-7. Go back and tap **Install**.
+8. Unzip the downloaded file.
 
-8. Open **NRI Cleanup Desk**.
+9. Inside, find:
 
-9. Make sure your phone has internet, because this MVP loads the live website.
+```text
+app-debug.apk
+```
 
-## E. How to test the app
+10. Transfer `app-debug.apk` to your Android phone.
+
+11. Tap the APK file on your phone and install it.
+
+## Exact steps to install APK on Android phone
+
+1. Download the artifact from GitHub Actions.
+2. Unzip it if GitHub downloaded a ZIP file.
+3. Find:
+
+```text
+app-debug.apk
+```
+
+4. Send it to your Android phone using USB cable, Google Drive, email, WhatsApp to yourself, or nearby share.
+5. On your Android phone, tap `app-debug.apk`.
+6. Android may say installation from this source is not allowed. This is normal for a debug APK.
+7. Tap **Settings**.
+8. Turn on **Allow from this source** for the app you used to open the APK, for example Files, Chrome, Gmail, or Drive.
+9. Go back and tap **Install**.
+10. Open **NRI Cleanup Desk**.
+11. Make sure your phone has internet, because this MVP loads the live website.
+
+## How to test the app
 
 Use this checklist after installing the APK:
 
-- [ ] 1. App opens on Android.
-- [ ] 2. Page loads correctly.
-- [ ] 3. CTA scrolls to intake.
-- [ ] 4. Form can be completed.
-- [ ] 5. Score gauge updates.
-- [ ] 6. Score band appears.
-- [ ] 7. Recommended product appears.
-- [ ] 8. Copy summary works.
-- [ ] 9. Email summary opens email app.
-- [ ] 10. WhatsApp summary opens WhatsApp.
-- [ ] 11. Legal/footer sections are visible.
-- [ ] 12. No unnecessary permissions are requested.
-- [ ] 13. App works on a normal Android phone screen.
+- [ ] App opens on Android.
+- [ ] Page loads correctly.
+- [ ] CTA scrolls to intake.
+- [ ] Form can be completed.
+- [ ] Score gauge updates.
+- [ ] Score band appears.
+- [ ] Recommended product appears.
+- [ ] Copy summary works.
+- [ ] Email summary opens email app.
+- [ ] WhatsApp summary opens WhatsApp or browser fallback.
+- [ ] Legal/footer sections are visible.
+- [ ] No unnecessary permissions are requested.
+- [ ] App works on a normal Android phone screen.
 
-Also test this safety checklist:
+Also check permissions:
 
-- [ ] The app does not ask for contacts.
-- [ ] The app does not ask for storage/files.
 - [ ] The app does not ask for camera.
 - [ ] The app does not ask for microphone.
+- [ ] The app does not ask for contacts.
+- [ ] The app does not ask for storage/files.
 - [ ] The app does not ask for location.
 - [ ] The app does not ask for SMS.
 - [ ] The app does not ask for phone permission.
 
 The live-wrapper app only needs internet access to load the website.
 
-## F. What can go wrong and how to fix it
+## What tools you need locally
 
-### Problem: `npm` command not found
+If you download the APK from GitHub Actions, you do **not** need Android Studio just to install and test the APK.
 
-Fix: install Node.js LTS, then close and reopen Terminal.
+You only need:
 
-Check again:
+- a GitHub account with access to the repo
+- an Android phone
+- internet on your phone
+
+You need Android Studio only if you want to build the APK yourself on your laptop or create a signed release APK/AAB later.
+
+## Optional: build the debug APK locally
+
+Install these once on your laptop:
+
+1. Git
+2. Node.js LTS
+3. Android Studio
+
+Then run:
 
 ```bash
-node --version
-npm --version
-```
-
-### Problem: `npm install` fails
-
-Fixes to try:
-
-```bash
-npm cache verify
+git clone https://github.com/blackdoc3/nakshatrapardeshi.com.git
+cd nakshatrapardeshi.com
+git checkout codex/nri-cleanup-android-apk
 npm install
-```
-
-If it still fails, check that your internet connection works.
-
-### Problem: `npm run cap:add:android` says Android already exists
-
-That is okay. Run:
-
-```bash
+npm run assets:create
+npm run cap:add:android
+npm run assets:generate
 npm run cap:sync
 npm run cap:open
 ```
 
-### Problem: Android Studio Gradle sync fails
+Then in Android Studio:
 
-Fixes to try:
+1. Click **Build**.
+2. Click **Build Bundle(s) / APK(s)**.
+3. Click **Build APK(s)**.
+4. Wait for the build to finish.
+5. Click **Locate**.
 
-1. Open Android Studio.
-2. Let it install missing SDK/build tools.
-3. Use Android Studio's bundled JDK if prompted.
-4. Click **File > Sync Project with Gradle Files**.
-5. Try building again.
-
-### Problem: App opens but page does not load
-
-Fixes to try:
-
-1. Check phone Wi‑Fi/mobile data.
-2. Open this URL in Chrome on the same phone:
-
-```text
-https://www.nakshatrapardeshi.com/nri-cleanup/
-```
-
-3. If the website works in Chrome but not the app, run again:
-
-```bash
-npm run cap:sync
-```
-
-Then rebuild the APK.
-
-### Problem: WhatsApp summary opens browser instead of WhatsApp
-
-Fixes to try:
-
-1. Install WhatsApp on the phone.
-2. Make sure WhatsApp is logged in.
-3. Tap the WhatsApp link again.
-4. Android may ask which app to use; choose WhatsApp.
-
-### Problem: Email summary does not open email app
-
-Fixes to try:
-
-1. Install Gmail or Outlook.
-2. Add your email account.
-3. Tap the email link again.
-
-### Problem: Copy summary does not work
-
-Fix: long press the generated summary text and copy it manually. The page already shows a fallback message if clipboard copy fails.
-
-### Problem: App icon still shows the default Capacitor icon
-
-Run these again after the Android project exists:
-
-```bash
-npm run assets:create
-npm run assets:generate
-npm run cap:sync
-```
-
-Then rebuild the APK.
-
-## G. Difference between debug APK and release APK
-
-### Debug APK
-
-A debug APK is for your own testing.
-
-Use it to:
-
-- install on your own phone
-- test the MVP
-- show a few trusted people manually
-
-Debug APK path:
+Local debug APK path:
 
 ```text
 android/app/build/outputs/apk/debug/app-debug.apk
 ```
 
+You can also try command-line build after Android is generated:
+
+```bash
+npm run android:debug
+```
+
+## Debug APK vs release APK
+
+### Debug APK
+
+A debug APK is okay for personal testing.
+
+Use it to:
+
+- install on your own Android phone
+- test the MVP
+- show a few trusted people manually
+
 Do not treat the debug APK as a polished public release.
 
-### Release APK
+### Release APK / AAB
 
-A release APK is for wider distribution outside your own phone.
+A signed release APK is needed for wider direct distribution.
 
-For release, you must sign the app with your own private signing key/keystore.
+If you publish to Google Play later, you will probably need an Android App Bundle (`.aab`) instead of only an APK.
 
-If you publish on Google Play later, you will probably need an **Android App Bundle (`.aab`)** instead of only an APK.
-
-## H. Do I need Android Studio?
-
-Yes, for a beginner, use Android Studio.
-
-Technically, APKs can be built from the command line after everything is installed, but Android Studio is the easiest way to:
-
-- install Android SDK/build tools
-- sync Gradle
-- build APKs
-- create signed APK/AAB files later
-- debug build problems
-
-## I. Do I need Google Play Console yet?
-
-No.
-
-For your own testing, you only need a debug APK installed manually on your phone.
-
-You need Google Play Console only if you decide to publish the app publicly or test through Google Play tracks.
-
-For Google Play, expect to create a signed **Android App Bundle (`.aab`)**.
-
-## J. What not to share publicly
+For release, create your own private signing key/keystore in Android Studio and keep it safe.
 
 Never share or commit:
 
 - `.jks` files
 - `.keystore` files
-- `key.properties`
 - signing key passwords
 - keystore passwords
-- private API keys
-- private release credentials
+- `key.properties`
+- release signing files
 
-The `.gitignore` file blocks common signing-key files, but you should still be careful.
+The `.gitignore` blocks common signing-key files, but you must still be careful.
 
 ## Android Studio signed release instructions for later
 
 Use this only after the debug APK works.
 
-### Create signed APK or AAB
-
-1. Open the Android project:
+1. Run:
 
 ```bash
 npm run cap:open
 ```
 
 2. In Android Studio, click **Build**.
-
 3. Click **Generate Signed Bundle / APK**.
-
-4. Choose one:
-   - **Android App Bundle** if you may publish on Google Play.
-   - **APK** if you want a signed APK for direct sharing.
-
+4. Choose **Android App Bundle** for Google Play, or **APK** for direct sharing.
 5. Click **Next**.
-
 6. Click **Create new...** under key store path.
-
 7. Save the keystore outside the repo, for example:
 
 ```text
 Documents/android-signing/nri-cleanup-desk.jks
 ```
 
-8. Create a strong password and save it safely in your password manager.
-
+8. Create a strong password and save it in your password manager.
 9. Use an alias like:
 
 ```text
@@ -436,32 +306,49 @@ nri-cleanup-desk
 ```
 
 10. Set validity to a long period, for example 25 years.
-
 11. Fill in your name/organisation details.
-
 12. Click **OK**.
-
-13. Choose **release** build variant.
-
+13. Choose the **release** build variant.
 14. Click **Create** or **Finish**.
-
 15. Save the signed output safely.
 
 Important: if you lose the signing key, future updates may become difficult or impossible depending on how you distribute the app.
 
-## Manual steps you still must do
+## Common problems
 
-I cannot avoid these because they need your laptop/phone:
+### Workflow did not run
 
-1. Install Node.js LTS.
-2. Install Android Studio.
-3. Clone the repo and switch to the branch.
-4. Run the npm/Capacitor commands.
-5. Open Android Studio.
-6. Build the APK.
-7. Transfer the APK to your phone.
-8. Allow install from unknown sources.
-9. Test on a real Android phone.
+Go to the PR branch and push a tiny commit, or open **Actions > Build NRI Cleanup Desk Debug APK > Run workflow** if the workflow is available there.
+
+Note: GitHub manual workflow runs may only appear reliably once the workflow exists on the default branch. The push trigger is the main build path for this draft PR branch.
+
+### No artifact appears
+
+Open the workflow run and check whether it has a green tick. Artifacts appear only after the build succeeds.
+
+### APK downloads as ZIP
+
+That is normal. Unzip it and install `app-debug.apk`.
+
+### Phone blocks installation
+
+Allow installs from the app you used to open the APK, such as Files, Gmail, Drive, or Chrome.
+
+### App opens but page does not load
+
+Check phone internet and open this URL in Chrome on the same phone:
+
+```text
+https://www.nakshatrapardeshi.com/nri-cleanup/
+```
+
+### WhatsApp opens browser instead of WhatsApp
+
+Install WhatsApp, make sure you are logged in, and try again. The `wa.me` link can also fall back to the browser.
+
+### Email summary does not open email app
+
+Install Gmail or Outlook and make sure an email account is added.
 
 ## Notes for future improvements
 
