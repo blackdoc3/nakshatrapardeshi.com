@@ -4,6 +4,7 @@ const OWNER_WHATSAPP = '919881553633';
 const form = document.querySelector('#nri-intake-form');
 const resultCard = document.querySelector('#result-card');
 const scoreValue = document.querySelector('#score-value');
+const scoreGauge = document.querySelector('#score-gauge');
 const scoreBand = document.querySelector('#score-band');
 const recommendedProduct = document.querySelector('#recommended-product');
 const safeExplanation = document.querySelector('#safe-explanation');
@@ -206,6 +207,21 @@ function getBand(score) {
   return 'Very high admin complexity';
 }
 
+function getBandColor(score) {
+  if (score <= 25) return '#2f9e44';
+  if (score <= 50) return '#d6a329';
+  if (score <= 75) return '#e67e22';
+  return '#c0392b';
+}
+
+function updateScoreGauge(score, band) {
+  if (!scoreGauge) return;
+  const angle = Math.max(0, Math.min(score, 100)) * 3.6;
+  scoreGauge.style.setProperty('--score-angle', `${angle}deg`);
+  scoreGauge.style.setProperty('--score-color', getBandColor(score));
+  scoreGauge.setAttribute('aria-label', `NRI Money Mess Score ${score} out of 100. ${band}.`);
+}
+
 function getRecommendedProduct(score) {
   if (score <= 25) return 'Free NRI Money Mess Score';
   if (score <= 50) return '£20 Beta Mini Cleanup';
@@ -296,7 +312,8 @@ form.addEventListener('submit', (event) => {
   const summary = buildSummary(score, band, product, explanation);
   const whatsappSummary = buildWhatsAppSummary(score, band, product);
 
-  scoreValue.textContent = `${score}/100`;
+  scoreValue.textContent = score;
+  updateScoreGauge(score, band);
   scoreBand.textContent = band;
   recommendedProduct.textContent = product;
   safeExplanation.textContent = explanation;
