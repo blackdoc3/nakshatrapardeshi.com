@@ -1,0 +1,24 @@
+{
+  "name": "nri-cleanup-desk-android-wrapper",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Capacitor Android wrapper for the NRI Cleanup Desk live web MVP.",
+  "type": "module",
+  "scripts": {
+    "assets:create": "node scripts/generate-nc-assets.mjs",
+    "assets:generate": "capacitor-assets generate --android",
+    "cap:add:android": "cap add android",
+    "cap:sync": "cap sync android",
+    "cap:open": "cap open android",
+    "android:debug": "cd android && ./gradlew assembleDebug",
+    "android:release": "cd android && ./gradlew assembleRelease"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/core": "^8.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^4.0.0",
+    "@capacitor/cli": "^8.0.0"
+  }
+}
