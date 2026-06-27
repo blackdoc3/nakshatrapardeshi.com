@@ -26,7 +26,7 @@
         <a href="#value">What you get</a>
         <a href="#options">Options</a>
         <a href="#intake">Intake</a>
-        <a href="#disclaimer">Disclaimer</a>
+        <a href="#legal">Legal</a>
       </div>
     </nav>
   </header>
@@ -351,17 +351,17 @@
             <p class="eyebrow">Your result</p>
             <h2>NRI Money Mess Score</h2>
             <div class="score-dashboard">
-              <div class="score-gauge" id="score-gauge" aria-label="NRI Money Mess Score visual gauge">
+              <div class="score-gauge" id="score-gauge" aria-label="Money Mess Score visual gauge">
                 <div class="score-gauge-inner">
                   <span id="score-value">0</span>
                   <small>/100</small>
                 </div>
               </div>
               <div class="score-legend" aria-label="Score bands">
-                <span><i class="band-low"></i>0–25 Low</span>
-                <span><i class="band-moderate"></i>26–50 Moderate</span>
-                <span><i class="band-high"></i>51–75 High</span>
-                <span><i class="band-very-high"></i>76–100 Very high</span>
+                <span><i class="band-low"></i>0–25 Low admin complexity</span>
+                <span><i class="band-moderate"></i>26–50 Moderate admin complexity</span>
+                <span><i class="band-high"></i>51–75 High admin complexity</span>
+                <span><i class="band-very-high"></i>76–100 Very high admin complexity</span>
               </div>
             </div>
             <div class="result-grid">
@@ -385,12 +385,44 @@
       </div>
     </section>
 
-    <section id="disclaimer" class="content-section contact-card">
-      <p class="eyebrow">Important disclaimer</p>
-      <h2>Admin support only.</h2>
-      <p>NRI Financial Cleanup Desk provides admin support, education, document organisation, workflow planning, templates, and professional handoff preparation only.</p>
-      <p>It does not provide investment advice, tax advice, legal advice, accounting advice, financial advice, tax filing, or compliance guarantees. We do not recommend buying, selling, holding, redeeming, transferring, or switching any financial product. We do not calculate tax, determine tax residence, file tax returns, or confirm whether you are compliant.</p>
-      <p>For tax, legal, investment, accounting, or compliance decisions, please speak to a qualified CA, accountant, tax adviser, solicitor, or regulated financial adviser. Please do not share passwords, OTPs, card numbers, Aadhaar OTPs, net banking credentials, or login details.</p>
+    <section id="legal" class="content-section legal-section">
+      <div class="section-heading">
+        <p class="eyebrow">Legal and service boundaries</p>
+        <h2>Clear terms for a static MVP.</h2>
+        <p>These notes keep the service positioning clear and readable. They do not replace solicitor-written legal terms, but they explain how this early version works.</p>
+      </div>
+
+      <div class="legal-grid">
+        <details id="terms" class="legal-card" open>
+          <summary>Terms of Use</summary>
+          <p>By using this page, you understand that NRI Financial Cleanup Desk is an early static MVP. The service provides admin support, education, document organisation, workflow planning, templates, and professional handoff preparation only.</p>
+          <p>You are responsible for checking all information with qualified professionals before taking action.</p>
+        </details>
+
+        <details id="disclaimer" class="legal-card" open>
+          <summary>Important Disclaimer</summary>
+          <p>No investment advice, tax advice, legal advice, accounting advice, regulated financial advice, tax filing, or compliance guarantee is provided.</p>
+          <p>We do not recommend buying, selling, holding, redeeming, transferring, or switching any financial product. The Money Mess Score is an admin complexity score only.</p>
+        </details>
+
+        <details id="privacy" class="legal-card">
+          <summary>Privacy Notice</summary>
+          <p>This site does not automatically store form responses. Your score is calculated locally in your browser. If you email or WhatsApp the generated summary, you are choosing to send that information manually.</p>
+          <p>Please do not share passwords, OTPs, card numbers, Aadhaar OTPs, account numbers, net banking credentials, login details, or sensitive document uploads.</p>
+        </details>
+
+        <details id="ip" class="legal-card">
+          <summary>Intellectual Property</summary>
+          <p>All page content, wording, templates, structure, scoring approach, branding, and materials belong to NRI Financial Cleanup Desk / Nakshatra Pardeshi unless otherwise stated.</p>
+          <p>You may not copy, reproduce, resell, or republish the materials without permission.</p>
+        </details>
+
+        <details id="responsibility" class="legal-card">
+          <summary>Limitation of Responsibility</summary>
+          <p>The service helps organise information and prepare questions. It does not replace a CA, accountant, solicitor, tax adviser, or regulated financial adviser.</p>
+          <p>The service is not responsible for decisions you make after using the score, summary, checklist, or review. Seek qualified professional advice before acting.</p>
+        </details>
+      </div>
     </section>
 
     <section id="start" class="content-section contact-card final-cta">
@@ -401,6 +433,14 @@
     </section>
   </main>
 
-  <footer class="site-footer"><p>© 2026 NRI Financial Cleanup Desk. Static MVP for admin clarity.</p></footer>
+  <footer class="site-footer">
+    <nav class="footer-links" aria-label="Legal links">
+      <a href="#terms">Terms</a>
+      <a href="#disclaimer">Disclaimer</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#ip">Intellectual Property</a>
+    </nav>
+    <p>© 2026 NRI Financial Cleanup Desk. All rights reserved.</p>
+  </footer>
 </body>
 </html>
