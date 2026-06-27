@@ -5,8 +5,7 @@ const form = document.querySelector('#nri-intake-form');
 const resultCard = document.querySelector('#result-card');
 const scoreValue = document.querySelector('#score-value');
 const scoreGauge = document.querySelector('#score-gauge');
-const scoreDashboard = document.querySelector('.score-dashboard');
-const scoreLegend = document.querySelector('.score-legend');
+const scoreGaugeBand = document.querySelector('#score-gauge-band');
 const scoreBand = document.querySelector('#score-band');
 const recommendedProduct = document.querySelector('#recommended-product');
 const safeExplanation = document.querySelector('#safe-explanation');
@@ -210,33 +209,10 @@ function getBand(score) {
 }
 
 function getBandColor(score) {
-  if (score <= 25) return '#2f9e44';
-  if (score <= 50) return '#d6a329';
-  if (score <= 75) return '#e67e22';
-  return '#c0392b';
-}
-
-function initialiseScoreSafetyCopy() {
-  if (scoreDashboard && !document.querySelector('.score-safety-note')) {
-    const note = document.createElement('p');
-    note.className = 'privacy-note score-safety-note';
-    note.textContent = 'Based only on your answers. This is an admin complexity score only. It is not tax, legal, investment, accounting, financial, or compliance advice.';
-    scoreDashboard.insertAdjacentElement('afterend', note);
-  }
-
-  if (scoreLegend) {
-    const labels = [
-      '0–25 Low admin complexity',
-      '26–50 Moderate admin complexity',
-      '51–75 High admin complexity',
-      '76–100 Very high admin complexity',
-    ];
-
-    scoreLegend.querySelectorAll('span').forEach((span, index) => {
-      const icon = span.querySelector('i');
-      span.replaceChildren(icon, document.createTextNode(labels[index] || ''));
-    });
-  }
+  if (score <= 25) return '#0f6b4f';
+  if (score <= 50) return '#9b7a33';
+  if (score <= 75) return '#a86833';
+  return '#8f3f38';
 }
 
 function updateScoreGauge(score, band) {
@@ -245,6 +221,7 @@ function updateScoreGauge(score, band) {
   scoreGauge.style.setProperty('--score-angle', `${angle}deg`);
   scoreGauge.style.setProperty('--score-color', getBandColor(score));
   scoreGauge.setAttribute('aria-label', `Money Mess Score ${score} out of 100. ${band}. Based only on your answers. Admin complexity score only.`);
+  if (scoreGaugeBand) scoreGaugeBand.textContent = band.replace(' admin complexity', '');
 }
 
 function getRecommendedProduct(score) {
@@ -316,7 +293,6 @@ form.addEventListener('change', () => {
   clearFormError();
 });
 
-initialiseScoreSafetyCopy();
 updateConditionalFields();
 
 form.addEventListener('submit', (event) => {
