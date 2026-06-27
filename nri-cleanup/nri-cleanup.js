@@ -1,5 +1,10 @@
 const OWNER_EMAIL = 'nakshatrapardeshi@gmail.com';
 const OWNER_WHATSAPP = '919881553633';
+const isAndroidAppMode = new URLSearchParams(window.location.search).get('app') === 'android';
+
+if (isAndroidAppMode) {
+  document.body.classList.add('android-app-mode');
+}
 
 const form = document.querySelector('#nri-intake-form');
 const resultCard = document.querySelector('#result-card');
@@ -304,6 +309,128 @@ function updateShareLinks(summary, whatsappSummary) {
   }
 }
 
+function loadAndroidAppModeStyles() {
+  if (!isAndroidAppMode || document.querySelector('link[data-android-app-mode]')) return;
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = '/nri-cleanup/nri-cleanup-app-mode.css';
+  link.dataset.androidAppMode = 'true';
+  document.head.append(link);
+}
+
+function syncAndroidSelectedChoices() {
+  if (!isAndroidAppMode) return;
+  form.querySelectorAll('.choice').forEach((choice) => {
+    const input = choice.querySelector('input');
+    choice.classList.toggle('is-selected', Boolean(input?.checked));
+  });
+}
+
+function scrollToTarget(target) {
+  const element = document.querySelector(target);
+  if (!element) return;
+  element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function initialiseAndroidAppMode() {
+  if (!isAndroidAppMode) return;
+
+  loadAndroidAppModeStyles();
+
+  const firstHeroButton = document.querySelector('.hero-actions .button.primary');
+  if (firstHeroButton) {
+    firstHeroButton.textContent = 'Start Free Score';
+    firstHeroButton.setAttribute('aria-label', 'Start Free Money Mess Score');
+  }
+
+  const header = document.querySelector('.site-header');
+  if (header && !document.querySelector('.app-progress')) {
+    const progress = document.createElement('nav');
+    progress.className = 'app-progress';
+    progress.setAttribute('aria-label', 'NRI Cleanup Desk app journey');
+    progress.innerHTML = `
+      <div class="app-progress-track">
+        <a class="app-step is-active" href="#top" data-step-target="top">Welcome</a>
+        <a class="app-step" href="#value" data-step-target="value">What you get</a>
+        <a class="app-step" href="#options" data-step-target="options">Options</a>
+        <a class="app-step" href="#intake" data-step-target="intake">Intake</a>
+        <a class="app-step" href="#result-card" data-step-target="result-card">Result</a>
+        <a class="app-step" href="#legal" data-step-target="legal">Legal</a>
+      </div>`;
+    header.insertAdjacentElement('afterend', progress);
+
+    progress.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        scrollToTarget(link.getAttribute('href'));
+      });
+    });
+  }
+
+  if (!document.querySelector('.android-bottom-cta')) {
+    const bottomBar = document.createElement('div');
+    bottomBar.className = 'android-bottom-cta';
+    bottomBar.innerHTML = `
+      <div class="android-bottom-cta-inner">
+        <div class="android-bottom-copy">
+          <strong>Step 1 of 5</strong>
+          <span>Free admin complexity score</span>
+        </div>
+        <a class="android-bottom-button" href="#intake">Start / Continue Intake</a>
+      </div>`;
+    document.body.append(bottomBar);
+
+    bottomBar.querySelector('a')?.addEventListener('click', (event) => {
+      event.preventDefault();
+      scrollToTarget('#intake');
+    });
+  }
+
+  syncAndroidSelectedChoices();
+  updateAndroidProgressState();
+
+  const observedSections = ['top', 'value', 'options', 'intake', 'result-card', 'legal']
+    .map((id) => document.getElementById(id))
+    .filter(Boolean);
+
+  if ('IntersectionObserver' in window && observedSections.length) {
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (visible?.target?.id) updateAndroidProgressState(visible.target.id);
+    }, { rootMargin: '-42% 0px -45% 0px', threshold: [0.1, 0.25, 0.5, 0.75] });
+
+    observedSections.forEach((section) => observer.observe(section));
+  }
+}
+
+function updateAndroidProgressState(activeId) {
+  if (!isAndroidAppMode) return;
+  const visibleResult = resultCard?.classList.contains('visible');
+  const inferredId = activeId || (visibleResult ? 'result-card' : 'top');
+
+  document.querySelectorAll('.app-step').forEach((step) => {
+    step.classList.toggle('is-active', step.dataset.stepTarget === inferredId);
+  });
+
+  const stepMap = {
+    top: ['Step 1 of 5', 'Free admin complexity score'],
+    value: ['Step 2 of 5', 'See what you get'],
+    options: ['Step 3 of 5', 'Choose your cleanup option'],
+    intake: ['Step 4 of 5', 'Complete your intake'],
+    'result-card': ['Step 5 of 5', 'Review and share summary'],
+    legal: ['Legal', 'Service boundaries and privacy'],
+  };
+
+  const [label, helper] = stepMap[inferredId] || stepMap.top;
+  const copy = document.querySelector('.android-bottom-copy');
+  if (copy) {
+    copy.querySelector('strong').textContent = label;
+    copy.querySelector('span').textContent = helper;
+  }
+}
+
 setGroupExclusive('account_types', ['None', 'Not sure']);
 setGroupExclusive('demat_brokers', ['None', 'Not sure']);
 setGroupExclusive('tax_documents', ['None of these', 'Not sure']);
@@ -314,14 +441,17 @@ form.querySelectorAll('input[name="indian_bank_accounts"], input[name="demat_bro
 
 form.addEventListener('change', () => {
   clearFormError();
+  syncAndroidSelectedChoices();
 });
 
 initialiseScoreSafetyCopy();
 updateConditionalFields();
+initialiseAndroidAppMode();
 
 form.addEventListener('submit', (event) => {
   event.preventDefault();
   updateConditionalFields();
+  syncAndroidSelectedChoices();
 
   if (!validateCustomGroups()) return;
 
@@ -346,6 +476,7 @@ form.addEventListener('submit', (event) => {
   summaryOutput.textContent = summary;
   updateShareLinks(summary, whatsappSummary);
   resultCard.classList.add('visible');
+  updateAndroidProgressState('result-card');
   resultCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 
