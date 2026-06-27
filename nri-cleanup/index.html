@@ -23,7 +23,7 @@
         <span class="brand-text">NRI Cleanup Desk</span>
       </a>
       <div class="nav-links">
-        <a href="#problem">Problem</a>
+        <a href="#value">What you get</a>
         <a href="#options">Options</a>
         <a href="#intake">Intake</a>
         <a href="#disclaimer">Disclaimer</a>
@@ -36,18 +36,18 @@
       <div class="hero-copy">
         <p class="eyebrow">NRI Financial Cleanup Desk</p>
         <h1>Moved from India to the UK? Clean up your India-side financial admin.</h1>
-        <p class="hero-lede">A simple admin cleanup service for Indians in the UK with Indian bank accounts, NRE/NRO confusion, demat accounts, mutual funds, SIPs, FDs, India tax documents, or family finance responsibilities.</p>
+        <p class="hero-lede">We help UK-based Indians organise the messy India-side money admin that often stays behind after moving abroad: Indian bank accounts, NRE/NRO confusion, demat accounts, mutual funds, SIPs, FDs, India tax documents, and family finance responsibilities.</p>
         <div class="hero-actions" aria-label="Primary actions">
           <a class="button primary" href="#intake">Take Free NRI Money Mess Score</a>
-          <a class="button secondary" href="#options">See options</a>
+          <a class="button secondary" href="#options">See cleanup options</a>
         </div>
         <p class="small-note">Static MVP: no login, no document upload, no automatic storage.</p>
       </div>
 
       <aside class="status-card" aria-label="Service summary">
-        <p class="status-label">What you get</p>
+        <p class="status-label">What we provide</p>
         <h2>Admin clarity before professional advice.</h2>
-        <p>Organise what you have, identify admin gaps, prepare documents, and create a clear next-step checklist before speaking to your CA, accountant, bank, or broker.</p>
+        <p>Start with a free Money Mess Score. For paid beta options, the value is the manual review: a structured written cleanup summary, missing-document checklist, priority questions for your CA/accountant/bank/broker, and a practical next-step plan.</p>
         <div class="status-tags" aria-label="Tags">
           <span>NRE/NRO</span>
           <span>Demat</span>
@@ -55,6 +55,31 @@
           <span>Tax documents</span>
         </div>
       </aside>
+    </section>
+
+    <section id="value" class="content-section value-section">
+      <div class="section-heading">
+        <p class="eyebrow">Why this exists</p>
+        <h2>Not advice. A practical cleanup layer before you speak to professionals.</h2>
+        <p>Many NRIs do not need another random tip. They need their scattered accounts, documents, questions and next steps organised clearly before they speak to the right expert.</p>
+      </div>
+      <div class="bento-grid value-grid">
+        <article class="tile value-card">
+          <span class="tile-kicker">01 / Who we are</span>
+          <h3>An admin cleanup desk for UK-based Indians</h3>
+          <p>Built for people who moved from India to the UK but still have India-side financial admin spread across banks, brokers, tax portals, emails, family messages, and old records.</p>
+        </article>
+        <article class="tile value-card featured">
+          <span class="tile-kicker">02 / What you get</span>
+          <h3>Score, structure and handoff preparation</h3>
+          <p>You get an admin complexity score, a clearer map of what may need organising, a document checklist, and better questions to ask your CA, accountant, bank, or broker.</p>
+        </article>
+        <article class="tile value-card">
+          <span class="tile-kicker">03 / Why paid review</span>
+          <h3>Manual review saves confusion</h3>
+          <p>The paid beta options are not for generic information. They cover time spent turning your answers into a cleaner written plan so you know what to collect, what to check, and who to ask next.</p>
+        </article>
+      </div>
     </section>
 
     <section id="problem" class="content-section">
@@ -325,7 +350,20 @@
           <section id="result-card" class="result-card" aria-live="polite">
             <p class="eyebrow">Your result</p>
             <h2>NRI Money Mess Score</h2>
-            <div class="score-pill" id="score-value">0/100</div>
+            <div class="score-dashboard">
+              <div class="score-gauge" id="score-gauge" aria-label="NRI Money Mess Score visual gauge">
+                <div class="score-gauge-inner">
+                  <span id="score-value">0</span>
+                  <small>/100</small>
+                </div>
+              </div>
+              <div class="score-legend" aria-label="Score bands">
+                <span><i class="band-low"></i>0–25 Low</span>
+                <span><i class="band-moderate"></i>26–50 Moderate</span>
+                <span><i class="band-high"></i>51–75 High</span>
+                <span><i class="band-very-high"></i>76–100 Very high</span>
+              </div>
+            </div>
             <div class="result-grid">
               <div class="result-stat"><span>Score band</span><strong id="score-band">—</strong></div>
               <div class="result-stat"><span>Recommended product</span><strong id="recommended-product">—</strong></div>
