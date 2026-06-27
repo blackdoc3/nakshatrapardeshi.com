@@ -14,11 +14,11 @@
     "android:release": "cd android && ./gradlew assembleRelease"
   },
   "dependencies": {
-    "@capacitor/android": "^8.0.0",
-    "@capacitor/core": "^8.0.0"
+    "@capacitor/android": "latest",
+    "@capacitor/core": "latest"
   },
   "devDependencies": {
-    "@capacitor/assets": "^4.0.0",
-    "@capacitor/cli": "^8.0.0"
+    "@capacitor/assets": "latest",
+    "@capacitor/cli": "latest"
   }
 }
